@@ -1,41 +1,29 @@
 // @flow
-import React, { useState } from "react"
-import ReactDOM from "react-dom"
-import Editor, { examples } from "./Editor"
+import React from "react"
 import Annotator from "../Annotator"
-import ErrorBoundaryDialog from "./ErrorBoundaryDialog.js"
+import ErrorBoundary from "./ErrorBoundary"
 
 export default () => {
-  const [annotatorOpen, changeAnnotatorOpen] = useState(false)
-  const [annotatorProps, changeAnnotatorProps] = useState(examples["Custom"]())
-  const [lastOutput, changeLastOutput] = useState()
 
   return (
-    <div>
-      {annotatorOpen ? (
-        <ErrorBoundaryDialog
-          onClose={() => {
-            changeAnnotatorOpen(false)
-          }}
-        >
-          <Annotator
-            {...(annotatorProps: any)}
-            onExit={(output) => {
-              delete (output: any)["lastAction"]
-              changeLastOutput(output)
-              changeAnnotatorOpen(false)
-            }}
-          />
-        </ErrorBoundaryDialog>
-      ) : (
-        <Editor
-          lastOutput={lastOutput}
-          onOpenAnnotator={(props) => {
-            changeAnnotatorProps(props)
-            changeAnnotatorOpen(true)
+      <ErrorBoundary>
+        <Annotator
+          regionTagList={[]}
+          regionClsList={["tab", "button"]}
+          images={[
+            {
+              src: "https://images.unsplash.com/photo-1561518776-e76a5e48f731?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80",
+              name: "test 1",
+            },
+            {
+              src: "https://www.bianchi.com/wp-content/uploads/2019/07/YPB17I555K.jpg",
+              name: "test 2",
+            }
+          ]}
+          onExit={(output) => {
+
           }}
         />
-      )}
-    </div>
+      </ErrorBoundary>
   )
 }

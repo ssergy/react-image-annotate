@@ -1,6 +1,6 @@
 // @flow
 
-import React, { setState, memo } from "react"
+import React, { memo } from "react"
 import { makeStyles } from "@material-ui/core/styles"
 import SidebarBoxContainer from "../SidebarBoxContainer"
 import HistoryIcon from "@material-ui/icons/History"
@@ -13,7 +13,6 @@ import UndoIcon from "@material-ui/icons/Undo"
 import moment from "moment"
 import { grey } from "@material-ui/core/colors"
 import isEqual from "lodash/isEqual"
-import Box from "@material-ui/core/Box"
 
 const useStyles = makeStyles({
   emptyText: {

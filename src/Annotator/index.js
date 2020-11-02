@@ -4,9 +4,7 @@ import React, { useReducer, useEffect } from "react"
 import type { Node } from "react"
 import MainLayout from "../MainLayout"
 import type {
-  ToolEnum,
   Image,
-  Mode,
   MainLayoutState,
   Action,
 } from "../MainLayout/types"

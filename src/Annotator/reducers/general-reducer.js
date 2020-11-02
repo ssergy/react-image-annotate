@@ -1,8 +1,7 @@
 // @flow
 import type { MainLayoutState, Action } from "../../MainLayout/types"
 import { moveRegion } from "../../ImageCanvas/region-tools.js"
-import { getIn, setIn, updateIn } from "seamless-immutable"
-import moment from "moment"
+import { getIn, setIn } from "seamless-immutable"
 import isEqual from "lodash/isEqual"
 import getActiveImage from "./get-active-image"
 import { saveToHistory } from "./history-handler.js"
@@ -83,7 +82,7 @@ export default (state: MainLayoutState, action: Action) => {
       )
     }
   }
-  const unselectRegions = (state: MainLayoutState) => {
+  /*const unselectRegions = (state: MainLayoutState) => {
     if (!activeImage) return state
     return setIn(
       state,
@@ -93,7 +92,7 @@ export default (state: MainLayoutState, action: Action) => {
         highlighted: false,
       }))
     )
-  }
+  }*/
 
   const closeEditors = (state: MainLayoutState) => {
     if (currentImageIndex === null) return state
@@ -108,7 +107,7 @@ export default (state: MainLayoutState, action: Action) => {
   }
 
   const setNewImage = (img: string | Object, index: number) => {
-    let { src, frameTime } = typeof img === "object" ? img : { src: img }
+    let { /*src, */frameTime } = typeof img === "object" ? img : { src: img }
     return setIn(
       setIn(state, ["selectedImage"], index),
       ["selectedImageFrameTime"],
@@ -236,7 +235,7 @@ export default (state: MainLayoutState, action: Action) => {
 
       if (!state.mode) return state
       if (!activeImage) return state
-      const { mouseDownAt } = state
+      //const { mouseDownAt } = state
       switch (state.mode.mode) {
         case "MOVE_POLYGON_POINT": {
           const { pointIndex, regionId } = state.mode
@@ -409,14 +408,14 @@ export default (state: MainLayoutState, action: Action) => {
             )
           }
 
-          return state
+          //return state
         }
         case "SET_EXPANDING_LINE_WIDTH": {
           const { regionId } = state.mode
           const [expandingLine, regionIndex] = getRegion(regionId)
           if (!expandingLine) return state
           const lastPoint = expandingLine.points.slice(-1)[0]
-          const { mouseDownAt } = state
+          //const { mouseDownAt } = state
           return setIn(
             state,
             [...pathToActiveImage, "regions", regionIndex, "expandingWidth"],
@@ -588,7 +587,7 @@ export default (state: MainLayoutState, action: Action) => {
         case "create-keypoints": {
           state = saveToHistory(state, "Create Keypoints")
           const [
-            [keypointsDefinitionId, { landmarks, connections }],
+            [keypointsDefinitionId, { landmarks/*, connections*/ }],
           ] = (Object.entries(state.keypointDefinitions): any)
 
           newRegion = {
@@ -651,6 +650,7 @@ export default (state: MainLayoutState, action: Action) => {
               mode: null,
             }
           }
+          return state
         }
         case "MOVE_REGION":
         case "RESIZE_KEYPOINTS":
@@ -671,12 +671,12 @@ export default (state: MainLayoutState, action: Action) => {
             expandingLine.points.length !== 0
               ? expandingLine.points.slice(-1)[0]
               : mouseDownAt
-          let jointStart
+          /*let jointStart
           if (expandingLine.points.length > 1) {
             jointStart = expandingLine.points.slice(-2)[0]
           } else {
             jointStart = lastPoint
-          }
+          }*/
           const mouseDistFromLastPoint = Math.sqrt(
             (lastPoint.x - x) ** 2 + (lastPoint.y - y) ** 2
           )
@@ -709,7 +709,7 @@ export default (state: MainLayoutState, action: Action) => {
       }
     }
     case "OPEN_REGION_EDITOR": {
-      const { region } = action
+      //const { region } = action
       const regionIndex = getRegionIndex(action.region)
       if (regionIndex === null) return state
       const newRegions = setIn(
@@ -728,7 +728,7 @@ export default (state: MainLayoutState, action: Action) => {
       return setIn(state, [...pathToActiveImage, "regions"], newRegions)
     }
     case "CLOSE_REGION_EDITOR": {
-      const { region } = action
+      //const { region } = action
       const regionIndex = getRegionIndex(action.region)
       if (regionIndex === null) return state
       return setIn(state, [...pathToActiveImage, "regions", regionIndex], {

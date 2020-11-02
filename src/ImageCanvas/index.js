@@ -6,6 +6,7 @@ import React, {
   useLayoutEffect,
   useEffect,
   useMemo,
+  useCallback
 } from "react"
 import type { Node } from "react"
 import { Matrix } from "transformation-matrix-js"
@@ -43,7 +44,7 @@ type Props = {
   imageSrc?: string,
   videoSrc?: string,
   videoTime?: number,
-  keypointDefinitions?: KeypointDefinitions,
+  keypointDefinitions?: KeypointsDefinition,
   onMouseMove?: ({ x: number, y: number }) => any,
   onMouseDown?: ({ x: number, y: number }) => any,
   onMouseUp?: ({ x: number, y: number }) => any,
@@ -145,11 +146,11 @@ export const ImageCanvas = ({
   const canvasEl = useRef(null)
   const layoutParams = useRef({})
   const [dragging, changeDragging] = useRafState(false)
-  const [maskImagesLoaded, changeMaskImagesLoaded] = useRafState(0)
+  //const [maskImagesLoaded, changeMaskImagesLoaded] = useRafState(0)
   const [zoomStart, changeZoomStart] = useRafState(null)
   const [zoomEnd, changeZoomEnd] = useRafState(null)
   const [mat, changeMat] = useRafState(getDefaultMat())
-  const maskImages = useRef({})
+  //const maskImages = useRef({})
   const windowSize = useWindowSize()
 
   const getLatestMat = useEventCallback(() => mat)
@@ -173,12 +174,16 @@ export const ImageCanvas = ({
     onMouseUp,
   })
 
-  useLayoutEffect(() => changeMat(mat.clone()), [windowSize])
+  const handleChangeMat = useCallback(() => {
+    changeMat(mat.clone())
+  }, [mat, changeMat])
 
-  const innerMousePos = mat.applyToPoint(
+  useLayoutEffect(() => handleChangeMat(), [windowSize, handleChangeMat])
+
+  /*const innerMousePos = mat.applyToPoint(
     mousePosition.current.x,
     mousePosition.current.y
-  )
+  )*/
 
   const projectRegionBox = useProjectRegionBox({ layoutParams, mat })
 
@@ -434,7 +439,7 @@ export const ImageCanvas = ({
         style={{ width: "100%", height: "100%" }}
         {...mouseEvents}
       >
-        <>
+        <React.Fragment>
           {fullImageSegmentationMode && (
             <ImageMask
               hide={!showMask}
@@ -469,7 +474,7 @@ export const ImageCanvas = ({
             onChangeVideoTime={onChangeVideoTime}
             onChangeVideoPlaying={onChangeVideoPlaying}
           />
-        </>
+        </React.Fragment>
       </PreventScrollToParents>
       <div className={classes.zoomIndicator}>
         {((1 / mat.a) * 100).toFixed(0)}%

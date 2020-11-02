@@ -8,7 +8,7 @@ import { setIn } from "seamless-immutable"
 import getActiveImage from "./get-active-image"
 
 export default (state: MainLayoutImageAnnotationState, action: Action) => {
-  const { currentImageIndex, pathToActiveImage, activeImage } = getActiveImage(
+  const { currentImageIndex/*, pathToActiveImage, activeImage*/ } = getActiveImage(
     state
   )
 
@@ -19,6 +19,8 @@ export default (state: MainLayoutImageAnnotationState, action: Action) => {
         h: action.metadata.naturalHeight,
       })
     }
+    default: {
+      return state
+    }
   }
-  return state
 }

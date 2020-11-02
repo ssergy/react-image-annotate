@@ -1,7 +1,7 @@
 // @flow
 
 import type { MainLayoutState, Action } from "../../MainLayout/types"
-import { setIn, updateIn, asMutable, without } from "seamless-immutable"
+import { setIn, updateIn, without } from "seamless-immutable"
 import moment from "moment"
 
 const typesToSaveWithHistory = {

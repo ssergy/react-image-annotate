@@ -1,6 +1,6 @@
 // @flow
 
-import { useEffect } from "react"
+import { useEffect, useCallback } from "react"
 
 import { useRafState, useInterval } from "react-use"
 
@@ -11,21 +11,22 @@ const useWindowSize = (initialWidth = Infinity, initialHeight = Infinity) => {
     height: isClient ? window.innerHeight : initialHeight,
   })
 
+  const handler = useCallback(() => {
+    setState({
+      width: window.innerWidth,
+      height: window.innerHeight,
+    })
+  }, [setState])
+
   useEffect(() => {
-    if (!isClient) return
-    const handler = () => {
-      setState({
-        width: window.innerWidth,
-        height: window.innerHeight,
-      })
-    }
+    if (typeof window === "undefined") return
 
     window.addEventListener("resize", handler)
 
     return () => {
       window.removeEventListener("resize", handler)
     }
-  }, [])
+  }, [handler])
 
   useInterval(() => {
     if (!isClient) return

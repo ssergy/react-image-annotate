@@ -7,7 +7,7 @@ import DialogTitle from "@material-ui/core/DialogTitle"
 import DialogContent from "@material-ui/core/DialogContent"
 import DialogActions from "@material-ui/core/DialogActions"
 
-export default class ErrorBoundaryDialog extends Component {
+export default class ErrorBoundary extends Component {
   state = { hasError: false, err: "" }
   componentDidCatch(err, info) {
     this.setState({

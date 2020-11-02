@@ -3,12 +3,9 @@
 import React from "react"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import {
-  faArrowsAlt,
   faMousePointer,
-  faExpandArrowsAlt,
   faGripLines,
   faTag,
-  faPaintBrush,
   faCrosshairs,
   faDrawPolygon,
   faVectorSquare,

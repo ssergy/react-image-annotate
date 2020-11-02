@@ -50,7 +50,7 @@ export default ({
     if (!videoPlaying && videoRef.current) {
       videoRef.current.currentTime = (videoTime || 0) / 1000
     }
-  }, [videoTime])
+  }, [videoTime, videoPlaying])
 
   useEffect(() => {
     let renderLoopRunning = false

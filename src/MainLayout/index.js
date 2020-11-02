@@ -78,7 +78,7 @@ export const MainLayout = ({
         ? dispatch(
             ({
               type,
-              ...params.reduce((acc, p, i) => ((acc[p] = args[i]), acc), {}),
+              ...params.reduce((acc, p, i) => {(acc[p] = args[i]); return acc}, {}),
             }: any)
           )
         : dispatch({ type, ...args[0] })
@@ -96,7 +96,7 @@ export const MainLayout = ({
     detectKeys: [27],
   })
 
-  const isAVideoFrame = activeImage && activeImage.frameTime !== undefined
+  //const isAVideoFrame = activeImage && activeImage.frameTime !== undefined
   const innerContainerRef = useRef()
   const hotkeyHandlers = useDispatchHotkeyHandlers({ dispatch })
 
@@ -129,12 +129,12 @@ export const MainLayout = ({
       regionTagList={state.regionTagList}
       regions={
         state.annotationType === "image"
-          ? activeImage.regions || []
+          ? activeImage && activeImage.regions || []
           : impliedVideoRegions
       }
       realSize={activeImage ? activeImage.realSize : undefined}
       videoPlaying={state.videoPlaying}
-      imageSrc={state.annotationType === "image" ? activeImage.src : null}
+      imageSrc={state.annotationType === "image" && activeImage ? activeImage.src : null}
       videoSrc={state.annotationType === "video" ? state.videoSrc : null}
       pointDistancePrecision={state.pointDistancePrecision}
       createWithPrimary={state.selectedTool.includes("create")}
@@ -228,13 +228,14 @@ export const MainLayout = ({
             headerLeftSide={[
               state.annotationType === "video" ? (
                 <KeyframeTimeline
+                  key="video"
                   currentTime={state.currentVideoTime}
                   duration={state.videoDuration}
                   onChangeCurrentTime={action("CHANGE_VIDEO_TIME", "newTime")}
                   keyframes={state.keyframes}
                 />
               ) : activeImage ? (
-                <div className={classes.headerTitle}>{activeImage.name}</div>
+                <div key="image" className={classes.headerTitle}>{activeImage.name}</div>
               ) : null,
             ].filter(Boolean)}
             headerItems={[
@@ -328,12 +329,12 @@ export const MainLayout = ({
                   expandedByDefault
                 />
               ),
-              // (state.images?.length || 0) > 1 && (
-              //   <ImageSelector
-              //     onSelect={action("SELECT_REGION", "region")}
-              //     images={state.images}
-              //   />
-              // ),
+              state.images && state.images.length > 0 && (
+                 <ImageSelector
+                   onSelect={action("SELECT_IMAGE", "image", "imageIndex")}
+                   images={state.images}
+                 />
+              ),
               <RegionSelector
                 regions={activeImage ? activeImage.regions : emptyArr}
                 onSelectRegion={action("SELECT_REGION", "region")}

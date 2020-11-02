@@ -46,5 +46,5 @@ export default ({ getLatestMat, changeMat }) => {
       window.removeEventListener("keydown", keyDownListener)
       window.removeEventListener("keyup", keyUpListener)
     }
-  }, [wasdMode])
+  }, [wasdMode, changeMat, getLatestMat])
 }

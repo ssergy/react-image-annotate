@@ -142,7 +142,6 @@ export const getEnclosingBox = (region: Region) => {
       return { x: 0, y: 0, w: 0, h: 0 }
     }
   }
-  throw new Error("unknown region")
 }
 
 export const moveRegion = (region: Region, x: number, y: number) => {
@@ -153,6 +152,8 @@ export const moveRegion = (region: Region, x: number, y: number) => {
     case "box": {
       return { ...region, x: x - region.w / 2, y: y - region.h / 2 }
     }
+    default: {
+      return region
+    }
   }
-  return region
 }

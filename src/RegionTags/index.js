@@ -34,7 +34,7 @@ export const RegionTags = ({
     .filter((r) => r.visible || r.visible === undefined)
     .map((region) => {
       const pbox = projectRegionBox(region)
-      const { iw, ih } = layoutParams.current
+      //const { iw, ih } = layoutParams.current
       let margin = 8
       if (region.highlighted && region.type === "box") margin += 6
       const labelBoxHeight =

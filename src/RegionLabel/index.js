@@ -1,6 +1,6 @@
 // @flow
 
-import React, { useState, memo } from "react"
+import React, { memo } from "react"
 import Paper from "@material-ui/core/Paper"
 import { makeStyles } from "@material-ui/core/styles"
 import styles from "./styles"
@@ -10,7 +10,7 @@ import IconButton from "@material-ui/core/IconButton"
 import Button from "@material-ui/core/Button"
 import TrashIcon from "@material-ui/icons/Delete"
 import CheckIcon from "@material-ui/icons/Check"
-import UndoIcon from "@material-ui/icons/Undo"
+//import UndoIcon from "@material-ui/icons/Undo"
 import Select from "react-select"
 import CreatableSelect from "react-select/creatable"
 
@@ -107,7 +107,7 @@ export const RegionLabel = ({
               <CreatableSelect
                 placeholder="Classification"
                 onChange={(o, actionMeta) => {
-                  if (actionMeta.action == "create-option") {
+                  if (actionMeta.action === "create-option") {
                     onRegionClassAdded(o.value)
                   }
                   return onChange({

@@ -37,6 +37,10 @@
     "react": "^16.8.0",
     "react-dom": "^16.8.0"
   },
+  "resolutions": {
+    "react": "^16.8.0",
+    "react-dom": "^16.8.0"
+  },
   "homepage": "/react-image-annotate",
   "repository": {
     "type": "git",
