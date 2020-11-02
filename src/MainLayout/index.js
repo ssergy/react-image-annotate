@@ -129,7 +129,7 @@ export const MainLayout = ({
       regionTagList={state.regionTagList}
       regions={
         state.annotationType === "image"
-          ? activeImage && activeImage.regions || []
+          ? (activeImage ? activeImage.regions : []) || []
           : impliedVideoRegions
       }
       realSize={activeImage ? activeImage.realSize : undefined}
