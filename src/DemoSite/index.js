@@ -10,6 +10,7 @@ export default () => {
         <Annotator
           regionTagList={[]}
           regionClsList={["tab", "button"]}
+          uploadUrl="http://127.0.0.1:4600/project"
           images={[
             {
               src: "https://images.unsplash.com/photo-1561518776-e76a5e48f731?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80",

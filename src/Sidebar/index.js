@@ -10,6 +10,7 @@ import DebugBox from "../DebugSidebarBox"
 import TagsSidebarBox from "../TagsSidebarBox"
 import KeyframesSelector from "../KeyframesSelectorSidebarBox"
 import type { Region } from "../ImageCanvas/region-tools.js"
+import Shortcuts from "../Shortcuts"
 
 const Container = styled("div")({})
 
@@ -102,7 +103,7 @@ export const Sidebar = ({
         />
       )}
       <History history={history} onRestoreHistory={() => onRestoreHistory()} />
-      {/* <Shortcuts onShortcutActionDispatched={onShortcutActionDispatched} /> */}
+      <Shortcuts onShortcutActionDispatched={onShortcutActionDispatched} />
     </Container>
   )
 }

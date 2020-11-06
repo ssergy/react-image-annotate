@@ -10,8 +10,9 @@ import ListItem from "@material-ui/core/ListItem"
 import ListItemText from "@material-ui/core/ListItemText"
 import isEqual from "lodash/isEqual"
 
+
 const useStyles = makeStyles({
-  img: { width: 40, height: 40, borderRadius: 8 },
+  img: { width: 40, height: 40, borderRadius: 8, marginRight: 8 },
 })
 
 export const ImageSelectorSidebarBox = ({ images, onSelect }) => {
@@ -21,7 +22,6 @@ export const ImageSelectorSidebarBox = ({ images, onSelect }) => {
       title="Images"
       subTitle={`(${images.length})`}
       icon={<CollectionsIcon style={{ color: grey[700] }} />}
-      expandedByDefault
     >
       <div>
         <List>

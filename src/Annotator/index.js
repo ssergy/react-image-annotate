@@ -79,6 +79,7 @@ export const Annotator = ({
   onPrevImage,
   keypointDefinitions,
   autoSegmentationOptions = { type: "autoseg" },
+  uploadUrl
 }: Props) => {
   if (typeof selectedImage === "string") {
     selectedImage = (images || []).findIndex((img) => img.src === selectedImage)
@@ -114,6 +115,7 @@ export const Annotator = ({
       history: [],
       videoName,
       keypointDefinitions,
+      uploadUrl,
       ...(annotationType === "image"
         ? {
             selectedImage,

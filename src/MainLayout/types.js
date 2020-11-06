@@ -24,6 +24,7 @@ export type ToolEnum =
   | "create-keypoints"
 
 export type Image = {
+  id: string,
   src: string,
   thumbnailSrc?: string,
   name: string,
