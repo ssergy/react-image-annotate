@@ -10,17 +10,9 @@ export default () => {
         <Annotator
           regionTagList={[]}
           regionClsList={["tab", "button"]}
-          uploadUrl="http://127.0.0.1:4600/project"
-          images={[
-            {
-              src: "https://images.unsplash.com/photo-1561518776-e76a5e48f731?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80",
-              name: "test 1",
-            },
-            {
-              src: "https://www.bianchi.com/wp-content/uploads/2019/07/YPB17I555K.jpg",
-              name: "test 2",
-            }
-          ]}
+          uploadUrl="http://127.0.0.1:4600/auth/project"
+          authToken="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijk2MTYwMGQ4LTNkMDItNGNjZS05N2IyLTM5ZmYwYmM4YTQ0MyIsInN0YXR1cyI6MSwibmFtZSI6IlRlc3QiLCJlbWFpbCI6InJ0YXR0eWFuYUBnbWFpbC5jb20iLCJyb2xlX2lkIjoxLCJjb21wYW55X2lkIjoiYzlmMmIwMjUtOGVhOS00ZTFhLTk0MzctMjM4M2QwODU2YTZhIiwiZXhwIjoxNjA1MTA0NjYyLCJpc3MiOiJydGF0dHlhbmFAZ21haWwuY29tIn0.YxI1G3sieaMkFaHjJ5iqLzaIRTFsOqXwHNXGmsRmQnI"
+          images={[]}
           onExit={(output) => {
 
           }}

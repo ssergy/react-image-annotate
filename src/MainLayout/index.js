@@ -358,6 +358,7 @@ export const MainLayout = ({
               />,
               <UploaderSidebarBox
                 uploadUrl={state.uploadUrl}
+                authToken={state.authToken}
                 onAddImage={action("ADD_IMAGE", "image")}
               />
             ].filter(Boolean)}

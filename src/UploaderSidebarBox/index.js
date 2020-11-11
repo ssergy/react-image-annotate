@@ -29,13 +29,16 @@ const useStyles = makeStyles({
   }
 })
 
-export const UploaderSidebarBox = ({ uploadUrl }) => {
+export const UploaderSidebarBox = ({ uploadUrl, authToken, onAddImage }) => {
   const classes = useStyles()
   const [imgFiles, setImgFiles] = useState([])
   const [txtFiles, setTxtFiles] = useState([])
 
-  const handleImgUploaded = (data) => {
-
+  const handleImgUploaded = (data, ind) => {
+    onAddImage({id: data.id, src: data.src, name: data.name})
+    const imgs = imgFiles.slice()
+    imgs.splice(ind, 1)
+    setImgFiles(imgs)
   }
 
   const handleTxtUploaded = (data) => {
@@ -79,11 +82,11 @@ export const UploaderSidebarBox = ({ uploadUrl }) => {
         <List>
           {imgFiles.length > 0 && <ListSubheader>Images</ListSubheader>}
           {imgFiles.map((img, i) => (
-            <UploadFileBox key={i} file={img} uploadUrl={uploadUrl} onSuccess={handleImgUploaded} remove={() => handleImgRemove(i)} />
+            <UploadFileBox key={i} file={img} uploadUrl={uploadUrl} authToken={authToken} onSuccess={(data) => handleImgUploaded(data, i)} remove={() => handleImgRemove(i)} />
           ))}
           {txtFiles.length > 0 && <ListSubheader>Labels</ListSubheader>}
           {txtFiles.map((img, i) => (
-            <UploadFileBox key={i} file={img} uploadUrl={uploadUrl} onSuccess={handleTxtUploaded} />
+            <UploadFileBox key={i} file={img} uploadUrl={uploadUrl} authToken={authToken} onSuccess={handleTxtUploaded} />
           ))}
         </List>
       </div>
@@ -91,7 +94,7 @@ export const UploaderSidebarBox = ({ uploadUrl }) => {
   )
 }
 
-const UploadFile = ({ file, uploadUrl, onSuccess, remove }) => {
+const UploadFile = ({ file, uploadUrl, authToken, onSuccess, remove }) => {
   const classes = useStyles()
   const [progress, setProgress] = useState(0)
   const [status, setStatus] = useState('pending')
@@ -115,7 +118,14 @@ const UploadFile = ({ file, uploadUrl, onSuccess, remove }) => {
       if (req.status === 200) {
         setProgress(100)
         setStatus('done')
-        onSuccess(req.response)
+        try {
+          let data = JSON.parse(req.response)
+          onSuccess(data)
+        } catch (e) {
+          setProgress(0)
+          setStatus('error')
+          setError(req.response);
+        }
       } else {
         setProgress(0)
         setStatus('error')
@@ -138,8 +148,11 @@ const UploadFile = ({ file, uploadUrl, onSuccess, remove }) => {
     formData.append("name", file.name);
 
     req.open("POST", uploadUrl);
+    if (authToken) {
+      req.setRequestHeader('Authorization', 'Bearer ' + authToken);
+    }
     req.send(formData);
-  }, [file, uploadUrl, onSuccess]);
+  }, [file, uploadUrl, authToken, onSuccess]);
 
   useEffect(() => {
     handleUpload()

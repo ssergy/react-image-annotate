@@ -19,6 +19,10 @@ export default (state: MainLayoutImageAnnotationState, action: Action) => {
         h: action.metadata.naturalHeight,
       })
     }
+    case "ADD_IMAGE": {
+      const images = state.images;
+      return setIn(state, ["images"], images.concat([action.image]))
+    }
     default: {
       return state
     }
