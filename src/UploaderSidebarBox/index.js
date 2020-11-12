@@ -6,6 +6,7 @@ import CircularProgress from "@material-ui/core/CircularProgress"
 import List from "@material-ui/core/List"
 import ListItem from "@material-ui/core/ListItem"
 import ListItemText from "@material-ui/core/ListItemText"
+import ListItemIcon from "@material-ui/core/ListItemIcon"
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction"
 import ListSubheader from "@material-ui/core/ListSubheader"
 import SidebarBoxContainer from "../SidebarBoxContainer"
@@ -13,21 +14,18 @@ import CollectionsIcon from "@material-ui/icons/Collections"
 import AddPhotoAlternateIcon from "@material-ui/icons/AddPhotoAlternate"
 import PostAddIcon from "@material-ui/icons/PostAdd"
 import ErrorOutlineIcon from "@material-ui/icons/ErrorOutline"
-import HighlightOffIcon from "@material-ui/icons/HighlightOff"
+import DeleteIcon from "@material-ui/icons/Delete"
+import ExpandLess from "@material-ui/icons/ExpandLess"
+import ExpandMore from "@material-ui/icons/ExpandMore"
+import ReplayIcon from "@material-ui/icons/Replay"
 import Collapse from '@material-ui/core/Collapse';
 import { grey } from "@material-ui/core/colors"
 import Button from "@material-ui/core/Button"
 import Dropzone from "react-dropzone"
+import styles from "./styles"
 
-const useStyles = makeStyles({
-  buttonWrapper: {
-    paddingLeft: 16,
-    paddingTop: 8
-  },
-  error: {
-    color: 'red'
-  }
-})
+
+const useStyles = makeStyles(styles)
 
 export const UploaderSidebarBox = ({ uploadUrl, authToken, onAddImage }) => {
   const classes = useStyles()
@@ -58,7 +56,7 @@ export const UploaderSidebarBox = ({ uploadUrl, authToken, onAddImage }) => {
       icon={<CollectionsIcon style={{ color: grey[700] }} />}
       expandedByDefault
     >
-      <div>
+      <div className={classes.container}>
         <div className={classes.buttonWrapper}>
           <Dropzone onDrop={acceptedFiles => setImgFiles(imgFiles.concat(acceptedFiles))} mutliple={true} accept=".jpg,.jpeg,.png,.gif,.tiff,.zip">
             {({getRootProps, getInputProps}) => (
@@ -102,10 +100,10 @@ const UploadFile = ({ file, uploadUrl, authToken, onSuccess, remove }) => {
   const [open, setOpen] = useState(false)
 
   const handleUpload = useCallback(() => {
-    console.log('handleUpload changed');
     if (!file) {
       return
     }
+    setStatus('pending')
     const req = new XMLHttpRequest()
 
     req.upload.addEventListener("progress", event => {
@@ -156,25 +154,29 @@ const UploadFile = ({ file, uploadUrl, authToken, onSuccess, remove }) => {
 
   useEffect(() => {
     handleUpload()
-  }, [])
+  }, [handleUpload])
 
   return (
     <React.Fragment>
       <ListItem dense>
-        <ListItemText
-          primary={file.name}
-        />
-        <ListItemSecondaryAction>
+        <ListItemIcon>
+          <React.Fragment>
           {status === 'pending' && <CircularProgress size={20} value={progress} />}
-          {status === 'error' && <ErrorOutlineIcon onClick={() => setOpen(!open)} />}
-        </ListItemSecondaryAction>
+          {status === 'error' && <ErrorOutlineIcon fontSize="small" color="secondary" />}
+          </React.Fragment>
+        </ListItemIcon>
+        <ListItemText primary={file.name}/>
+        {status === 'error' && <ListItemSecondaryAction onClick={() => setOpen(!open)}>
+          {open ? <ExpandLess fontSize="small" /> : <ExpandMore fontSize="small" />}
+        </ListItemSecondaryAction>}
       </ListItem>
       {status === 'error' && <Collapse in={open} timeout="auto" unmountOnExit>
         <List component="div" disablePadding>
-          <ListItem className={classes.error}>
-            <ListItemText primary={error} />
+          <ListItem>
+            <ListItemText primary={<span className={classes.error}>{error}</span>} />
             <ListItemSecondaryAction>
-              <HighlightOffIcon onClick={remove} />
+              <ReplayIcon color="primary" className="icon" onClick={handleUpload} />
+              <DeleteIcon color="secondary" className="icon" onClick={remove} />
             </ListItemSecondaryAction>
           </ListItem>
         </List>
@@ -184,5 +186,5 @@ const UploadFile = ({ file, uploadUrl, authToken, onSuccess, remove }) => {
 }
 
 export const UploadFileBox = memo(UploadFile, (prevProps, nextProps) =>
-    prevProps.file.name !== nextProps.file.name
+    prevProps.file.name === nextProps.file.name
 )

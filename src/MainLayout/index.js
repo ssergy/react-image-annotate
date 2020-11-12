@@ -27,7 +27,7 @@ import RegionSelector from "../RegionSelectorSidebarBox"
 import ImageSelector from "../ImageSelectorSidebarBox"
 import HistorySidebarBox from "../HistorySidebarBox"
 import useEventCallback from "use-event-callback"
-import {UploaderSidebarBox} from "../UploaderSidebarBox/index";
+// import {UploaderSidebarBox} from "../UploaderSidebarBox/index";
 
 const emptyArr = []
 const useStyles = makeStyles(styles)
@@ -356,11 +356,11 @@ export const MainLayout = ({
                 history={state.history}
                 onRestoreHistory={action("RESTORE_HISTORY")}
               />,
-              <UploaderSidebarBox
+              /*<UploaderSidebarBox
                 uploadUrl={state.uploadUrl}
                 authToken={state.authToken}
                 onAddImage={action("ADD_IMAGE", "image")}
-              />
+              />*/
             ].filter(Boolean)}
           >
             {canvas}
