@@ -86,6 +86,7 @@ export default ({
     return () => {
       renderLoopRunning = false
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [videoPlaying])
 
   const onLoadedVideoMetadata = useEventCallback((event) => {

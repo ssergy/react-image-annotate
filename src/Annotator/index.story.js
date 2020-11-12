@@ -334,10 +334,6 @@ storiesOf("Annotator", module)
           ],
         },
       ]}
-      onExit={(out) => {
-        window.lastOutput = out
-        console.log(JSON.stringify(out.images))
-      }}
     />
   ))
   .add("Annotator blocks scroll from propagating", () => (

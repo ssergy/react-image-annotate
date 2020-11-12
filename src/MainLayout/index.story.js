@@ -90,7 +90,6 @@ storiesOf("MainLayout", module)
   .add("Region Overlap Clicking", () => (
     <MainLayout
       state={{
-        showTags: false,
         selectedImage: exampleImage,
         selectedTool: "create-box",
         taskDescription: "",
@@ -139,7 +138,6 @@ storiesOf("MainLayout", module)
   .add("Point Distances", () => (
     <MainLayout
       state={{
-        showTags: false,
         showPointDistances: true,
         selectedImage: exampleImage,
         selectedTool: "create-point",
@@ -189,7 +187,6 @@ storiesOf("MainLayout", module)
   .add("Point distances real units", () => (
     <MainLayout
       state={{
-        showTags: false,
         showPointDistances: true,
         pointDistancePrecision: 2,
         selectedImage: exampleImage,

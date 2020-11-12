@@ -10,7 +10,6 @@ import type {
   KeypointDefinition,
 } from "../ImageCanvas/region-tools.js"
 
-import type { Node } from "react"
 
 export type ToolEnum =
   | "select"

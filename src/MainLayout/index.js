@@ -53,6 +53,7 @@ type Props = {
   dispatch: (Action) => any,
   alwaysShowNextButton?: boolean,
   alwaysShowPrevButton?: boolean,
+  showUploadButton?: boolean,
   onRegionClassAdded: () => {},
 }
 
@@ -61,6 +62,7 @@ export const MainLayout = ({
   dispatch,
   alwaysShowNextButton = false,
   alwaysShowPrevButton = false,
+  showUploadButton = false,
   RegionEditLabel,
   onRegionClassAdded,
 }: Props) => {
@@ -240,6 +242,7 @@ export const MainLayout = ({
               ) : null,
             ].filter(Boolean)}
             headerItems={[
+              showUploadButton ? { name: "Upload" } : null,
               { name: "Prev" },
               { name: "Next" },
               state.annotationType !== "video"

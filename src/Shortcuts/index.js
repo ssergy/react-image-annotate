@@ -78,6 +78,7 @@ export default ({ onShortcutActionDispatched }) => {
       }
     }
     setShortcuts(newShortcuts)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const onChangeShortcut = (actionId, keyName) => {
@@ -106,6 +107,7 @@ export default ({ onShortcutActionDispatched }) => {
       window.removeEventListener("keypress", handleKeyPress)
       document.activeElement.blur()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shortcuts])
 
   return (

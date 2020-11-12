@@ -77,6 +77,7 @@ export const Annotator = ({
   onExit,
   onNextImage,
   onPrevImage,
+  onUploadClick,
   keypointDefinitions,
   autoSegmentationOptions = { type: "autoseg" },
 }: Props) => {
@@ -136,6 +137,8 @@ export const Annotator = ({
         return onNextImage(without(state, "history"))
       } else if (action.buttonName === "Prev" && onPrevImage) {
         return onPrevImage(without(state, "history"))
+      } else if (action.buttonName === "Upload") {
+        return onUploadClick()
       }
     }
     dispatchToReducer(action)
@@ -155,6 +158,7 @@ export const Annotator = ({
       imageIndex: selectedImage,
       image: state.images[selectedImage],
     })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedImage])
 
   if (!images && !videoSrc)
@@ -166,6 +170,7 @@ export const Annotator = ({
         RegionEditLabel={RegionEditLabel}
         alwaysShowNextButton={Boolean(onNextImage)}
         alwaysShowPrevButton={Boolean(onPrevImage)}
+        showUploadButton={Boolean(onUploadClick)}
         state={state}
         dispatch={dispatch}
         onRegionClassAdded={onRegionClassAdded}
