@@ -1,6 +1,6 @@
 // @flow
 
-import React, { useState, useEffect, useMemo, useCallback } from "react"
+import React, { useState, useEffect, useMemo } from "react"
 import { useDebounce } from "react-use"
 import loadImage from "./load-image"
 import autoseg from "autoseg/webworker"
@@ -57,7 +57,7 @@ export const ImageMask = ({
 
   const [sampleImageData, setSampleImageData] = useState()
 
-  const handleChangeImageSrc = useCallback((imageSrc) => {
+  useEffect(() => {
     if (!imageSrc) return
 
     loadImage(imageSrc).then((imageData) => {
@@ -68,11 +68,8 @@ export const ImageMask = ({
       autoseg.loadImage(imageData)
       setSampleImageData(imageData)
     })
-  }, [regionClsList, autoSegmentationOptions])
-
-  useEffect(() => {
-    handleChangeImageSrc(imageSrc)
-  }, [imageSrc, handleChangeImageSrc])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [imageSrc])
 
   useDebounce(
     () => {

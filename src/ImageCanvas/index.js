@@ -5,8 +5,7 @@ import React, {
   useState,
   useLayoutEffect,
   useEffect,
-  useMemo,
-  useCallback
+  useMemo
 } from "react"
 import type { Node } from "react"
 import { Matrix } from "transformation-matrix-js"
@@ -174,11 +173,8 @@ export const ImageCanvas = ({
     onMouseUp,
   })
 
-  const handleChangeMat = useCallback(() => {
-    changeMat(mat.clone())
-  }, [mat, changeMat])
-
-  useLayoutEffect(() => handleChangeMat(), [windowSize, handleChangeMat])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useLayoutEffect(() => changeMat(mat.clone()), [windowSize])
 
   /*const innerMousePos = mat.applyToPoint(
     mousePosition.current.x,

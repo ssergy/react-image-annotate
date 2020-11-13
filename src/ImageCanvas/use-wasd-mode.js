@@ -46,5 +46,6 @@ export default ({ getLatestMat, changeMat }) => {
       window.removeEventListener("keydown", keyDownListener)
       window.removeEventListener("keyup", keyUpListener)
     }
-  }, [wasdMode, changeMat, getLatestMat])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [wasdMode])
 }

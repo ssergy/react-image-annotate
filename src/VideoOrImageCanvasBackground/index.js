@@ -29,6 +29,18 @@ const Error = styled("div")({
   padding: 50,
 })
 
+const Empty = styled("div")({
+  zIndex: 0,
+  position: "absolute",
+  left: 0,
+  right: 0,
+  bottom: 0,
+  top: 0,
+  fontWeight: "bold",
+  whiteSpace: "pre-wrap",
+  padding: 50,
+})
+
 export default ({
   imagePosition,
   mouseEvents,
@@ -50,7 +62,8 @@ export default ({
     if (!videoPlaying && videoRef.current) {
       videoRef.current.currentTime = (videoTime || 0) / 1000
     }
-  }, [videoTime, videoPlaying])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [videoTime])
 
   useEffect(() => {
     let renderLoopRunning = false
@@ -139,7 +152,7 @@ export default ({
   ])
 
   if (!videoSrc && !imageSrc)
-    return <Error>No imageSrc or videoSrc provided</Error>
+    return <Empty>No imageSrc or videoSrc provided. Upload some to start working</Empty>
 
   if (error) return <Error>{error}</Error>
 

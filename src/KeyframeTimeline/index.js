@@ -141,7 +141,8 @@ export default ({
     if (currentTime !== instantCurrentTime) {
       changeInstantCurrentTime(currentTime)
     }
-  }, [currentTime, instantCurrentTime])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentTime])
 
   const [minorInterval, majorInterval] = useMemo(
     () => getMajorInterval(duration),

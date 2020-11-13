@@ -1,6 +1,6 @@
 // @flow
 
-import React, { /*useState, */memo } from "react"
+import React, { useState, memo } from "react"
 import SidebarBoxContainer from "../SidebarBoxContainer"
 import { makeStyles, styled } from "@material-ui/core/styles"
 import { grey } from "@material-ui/core/colors"
@@ -48,12 +48,13 @@ const RowLayout = ({
   onClick,
 }) => {
   const classes = useStyles()
-  //const [mouseOver, changeMouseOver] = useState(false)
+  // eslint-disable-next-line
+  const [mouseOver, changeMouseOver] = useState(false)
   return (
     <div
       onClick={onClick}
-      //onMouseEnter={() => changeMouseOver(true)}
-      //onMouseLeave={() => changeMouseOver(false)}
+      onMouseEnter={() => changeMouseOver(true)}
+      onMouseLeave={() => changeMouseOver(false)}
       className={classnames(classes.row, { header, highlighted })}
     >
       <Grid container alignItems="center">
