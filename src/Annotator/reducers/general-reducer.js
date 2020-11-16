@@ -650,7 +650,7 @@ export default (state: MainLayoutState, action: Action) => {
               mode: null,
             }
           }
-          return state
+          return { ...state, mode: null }
         }
         case "MOVE_REGION":
         case "RESIZE_KEYPOINTS":

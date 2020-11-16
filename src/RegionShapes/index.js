@@ -172,7 +172,7 @@ export const WrappedRegionList = memo(
         const Component = RegionComponents[r.type]
         return (
           <Component
-            key={r.regionId}
+            key={r.id}
             region={r}
             iw={iw}
             ih={ih}
