@@ -31,6 +31,7 @@ export type Image = {
   pixelSize?: { w: number, h: number },
   realSize?: { w: number, h: number, unitName: string },
   frameTime?: number,
+  processing?: boolean
 }
 
 export type Mode =
