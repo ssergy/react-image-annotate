@@ -85,7 +85,7 @@ export const Annotator = ({
     selectedImage = (images || []).findIndex((img) => img.src === selectedImage)
     if (selectedImage === -1) selectedImage = undefined
   }
-  const annotationType = images ? "image" : "video"
+  const annotationType = !videoSrc ? "image" : "video"
   const [state, dispatchToReducer] = useReducer(
     historyHandler(
       combineReducers(

@@ -27,6 +27,7 @@ import RegionSelector from "../RegionSelectorSidebarBox"
 import ImageSelector from "../ImageSelectorSidebarBox"
 import HistorySidebarBox from "../HistorySidebarBox"
 import useEventCallback from "use-event-callback"
+import CloudUploadIcon from "@material-ui/icons/CloudUpload"
 // import {UploaderSidebarBox} from "../UploaderSidebarBox/index";
 
 const emptyArr = []
@@ -242,7 +243,7 @@ export const MainLayout = ({
               ) : null,
             ].filter(Boolean)}
             headerItems={[
-              showUploadButton ? { name: "Upload" } : null,
+              showUploadButton ? { name: "Upload", icon: <CloudUploadIcon/> } : null,
               { name: "Prev" },
               { name: "Next" },
               state.annotationType !== "video"

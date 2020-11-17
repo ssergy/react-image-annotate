@@ -15,6 +15,9 @@ export default () => {
             name: "Image 1",
             regions: []
           }]}
+          onUploadClick={() => {
+            console.log('upload')
+          }}
           onExit={(output) => {
 
           }}
