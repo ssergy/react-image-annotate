@@ -46,6 +46,20 @@ export default (state: MainLayoutState, action: Action) => {
     state
   )
 
+  const confirmAction = getIn(state, ["confirmAction"], null)
+  if (confirmAction !== null && activeImage && (action.type === "CONFIRM_CANCEL" || action.type === "CONFIRM_OK")) {
+    state = setIn(
+        setIn(
+            setIn(state, [...pathToActiveImage], activeImage),
+            [...pathToActiveImage, "status"],
+            null
+        ),
+        ["confirmAction"],
+        null
+    )
+    action = confirmAction
+  }
+
   const getRegionIndex = (region) => {
     const regionId =
       typeof region === "string" || typeof region === "number"
@@ -68,7 +82,7 @@ export default (state: MainLayoutState, action: Action) => {
     const [region, regionIndex] = getRegion(regionId)
     if (!region) return state
     if (obj !== null) {
-      return setIn(state, [...pathToActiveImage, "regions", regionIndex], {
+      return setIn(state, ["activeImage", "regions", regionIndex], {
         ...region,
         ...obj,
       })
@@ -77,7 +91,7 @@ export default (state: MainLayoutState, action: Action) => {
       const regions = activeImage.regions
       return setIn(
         state,
-        [...pathToActiveImage, "regions"],
+        ["activeImage", "regions"],
         (regions || []).filter((r) => r.id !== region.id)
       )
     }
@@ -98,7 +112,7 @@ export default (state: MainLayoutState, action: Action) => {
     if (currentImageIndex === null) return state
     return setIn(
       state,
-      [...pathToActiveImage, "regions"],
+      ["activeImage", "regions"],
       (activeImage.regions || []).map((r) => ({
         ...r,
         editingLabels: false,
@@ -108,8 +122,18 @@ export default (state: MainLayoutState, action: Action) => {
 
   const setNewImage = (img: string | Object, index: number) => {
     let { /*src, */frameTime } = typeof img === "object" ? img : { src: img }
+    let activeImage;
+    if (state.annotationType === "image") {
+      activeImage = getIn(state, ["images", index]) || null
+    } else if (state.annotationType === "video") {
+      activeImage = getIn(state, ["keyframes", frameTime || 0]) || null
+    }
     return setIn(
-      setIn(state, ["selectedImage"], index),
+      setIn(
+          setIn(state, ["selectedImage"], index),
+          ["activeImage"],
+          activeImage
+      ),
       ["selectedImageFrameTime"],
       frameTime
     )
@@ -120,13 +144,19 @@ export default (state: MainLayoutState, action: Action) => {
       return state
     }
     case "SELECT_IMAGE": {
+      let status = getIn(state, ["activeImage", "status"], null)
+      if (status === "changed") {
+        return setIn(state, ["confirmAction"], action)
+      }
       return setNewImage(action.image, action.imageIndex)
     }
     case "CHANGE_REGION": {
+      let changed =  false
       const regionIndex = getRegionIndex(action.region)
       if (regionIndex === null) return state
       const oldRegion = activeImage.regions[regionIndex]
       if (oldRegion.cls !== action.region.cls) {
+        changed = true
         state = saveToHistory(state, "Change Region Classification")
         const clsIndex = state.regionClsList.indexOf(action.region.cls)
         if (clsIndex !== -1) {
@@ -134,11 +164,12 @@ export default (state: MainLayoutState, action: Action) => {
         }
       }
       if (!isEqual(oldRegion.tags, action.region.tags)) {
+        changed = true
         state = saveToHistory(state, "Change Region Tags")
       }
       return setIn(
-        state,
-        [...pathToActiveImage, "regions", regionIndex],
+        changed ? setIn(state, ["activeImage", "status"], "changed") : state,
+        ["activeImage", "regions", regionIndex],
         action.region
       )
     }
@@ -148,8 +179,9 @@ export default (state: MainLayoutState, action: Action) => {
       for (const key of Object.keys(delta)) {
         if (key === "cls") saveToHistory(state, "Change Image Class")
         if (key === "tags") saveToHistory(state, "Change Image Tags")
-        state = setIn(state, [...pathToActiveImage, key], delta[key])
+        state = setIn(state, ["activeImage", key], delta[key])
       }
+      state = setIn(state, ["activeImage", "status"], "changed")
       return state
     }
     case "SELECT_REGION": {
@@ -161,7 +193,7 @@ export default (state: MainLayoutState, action: Action) => {
         highlighted: r.id === region.id,
         editingLabels: r.id === region.id,
       }))
-      return setIn(state, [...pathToActiveImage, "regions"], regions)
+      return setIn(state, ["activeImage", "regions"], regions)
     }
     case "BEGIN_MOVE_POINT": {
       state = closeEditors(state)
@@ -225,10 +257,14 @@ export default (state: MainLayoutState, action: Action) => {
       if (regionIndex === null) return state
       const points = [...polygon.points]
       points.splice(pointIndex, 0, point)
-      return setIn(state, [...pathToActiveImage, "regions", regionIndex], {
-        ...polygon,
-        points,
-      })
+      return setIn(
+          setIn(state, ["activeImage", "status"], "changed"),
+          ["activeImage", "regions", regionIndex],
+          {
+            ...polygon,
+              points,
+          }
+      )
     }
     case "MOUSE_MOVE": {
       const { x, y } = action
@@ -242,9 +278,9 @@ export default (state: MainLayoutState, action: Action) => {
           const regionIndex = getRegionIndex(regionId)
           if (regionIndex === null) return state
           return setIn(
-            state,
+            setIn(state, ["activeImage", "status"], "changed"),
             [
-              ...pathToActiveImage,
+              "activeImage",
               "regions",
               regionIndex,
               "points",
@@ -258,9 +294,9 @@ export default (state: MainLayoutState, action: Action) => {
           const [region, regionIndex] = getRegion(regionId)
           if (regionIndex === null) return state
           return setIn(
-            state,
+            setIn(state, ["activeImage", "status"], "changed"),
             [
-              ...pathToActiveImage,
+              "activeImage",
               "regions",
               regionIndex,
               "points",
@@ -285,8 +321,8 @@ export default (state: MainLayoutState, action: Action) => {
           const regionIndex = getRegionIndex(regionId)
           if (regionIndex === null) return state
           return setIn(
-            state,
-            [...pathToActiveImage, "regions", regionIndex],
+            setIn(state, ["activeImage", "status"], "changed"),
+            ["activeImage", "regions", regionIndex],
             moveRegion(activeImage.regions[regionIndex], x, y)
           )
         }
@@ -333,13 +369,17 @@ export default (state: MainLayoutState, action: Action) => {
           if (regionIndex === null) return state
           const box = activeImage.regions[regionIndex]
 
-          return setIn(state, [...pathToActiveImage, "regions", regionIndex], {
-            ...box,
-            x: dx,
-            w: dw,
-            y: dy,
-            h: dh,
-          })
+          return setIn(
+              setIn(state, ["activeImage", "status"], "changed"),
+              ["activeImage", "regions", regionIndex],
+              {
+                ...box,
+                x: dx,
+                w: dw,
+                y: dy,
+                h: dh,
+              }
+          )
         }
         case "RESIZE_KEYPOINTS": {
           const { regionId, landmarks, centerX, centerY } = state.mode
@@ -360,9 +400,9 @@ export default (state: MainLayoutState, action: Action) => {
           const [region, regionIndex] = getRegion(regionId)
           if (!region) return setIn(state, ["mode"], null)
           return setIn(
-            state,
+            setIn(state, ["activeImage", "status"], "changed"),
             [
-              ...pathToActiveImage,
+              "activeImage",
               "regions",
               regionIndex,
               "points",
@@ -385,8 +425,8 @@ export default (state: MainLayoutState, action: Action) => {
             if (mouseDistFromLastPoint < 0.002 && !lastPoint.width) return state
 
             const newState = setIn(
-              state,
-              [...pathToActiveImage, "regions", regionIndex, "points"],
+              setIn(state, ["activeImage", "status"], "changed"),
+              [activeImage, "regions", regionIndex, "points"],
               expandingLine.points.slice(0, -1).concat([
                 {
                   ...lastPoint,
@@ -399,8 +439,8 @@ export default (state: MainLayoutState, action: Action) => {
           } else {
             // If mouse is up, move the next candidate point
             return setIn(
-              state,
-              [...pathToActiveImage, "regions", regionIndex],
+              setIn(state, ["activeImage", "status"], "changed"),
+              ["activeImage", "regions", regionIndex],
               {
                 ...expandingLine,
                 candidatePoint: { x, y },
@@ -417,8 +457,8 @@ export default (state: MainLayoutState, action: Action) => {
           const lastPoint = expandingLine.points.slice(-1)[0]
           //const { mouseDownAt } = state
           return setIn(
-            state,
-            [...pathToActiveImage, "regions", regionIndex, "expandingWidth"],
+            setIn(state, ["activeImage", "status"], "changed"),
+            ["activeImage", "regions", regionIndex, "expandingWidth"],
             Math.sqrt((lastPoint.x - x) ** 2 + (lastPoint.y - y) ** 2)
           )
         }
@@ -438,8 +478,8 @@ export default (state: MainLayoutState, action: Action) => {
             const [polygon, regionIndex] = getRegion(state.mode.regionId)
             if (!polygon) break
             return setIn(
-              state,
-              [...pathToActiveImage, "regions", regionIndex],
+              setIn(state, ["activeImage", "status"], "changed"),
+              ["activeImage", "regions", regionIndex],
               { ...polygon, points: polygon.points.concat([[x, y]]) }
             )
           }
@@ -458,8 +498,9 @@ export default (state: MainLayoutState, action: Action) => {
                 })
               } else {
                 return state
+                  .setIn(["activeImage", "status"], "changed")
                   .setIn(
-                    [...pathToActiveImage, "regions", regionIndex],
+                    ["activeImage", "regions", regionIndex],
                     convertExpandingLineToPolygon(expandingLine)
                   )
                   .setIn(["mode"], null)
@@ -468,8 +509,8 @@ export default (state: MainLayoutState, action: Action) => {
 
             // Create new point
             return setIn(
-              state,
-              [...pathToActiveImage, "regions", regionIndex, "points"],
+              setIn(state, ["activeImage", "status"], "changed"),
+              ["activeImage", "regions", regionIndex, "points"],
               expandingLine.points.concat([{ x, y, angle: null, width: null }])
             )
           }
@@ -478,8 +519,9 @@ export default (state: MainLayoutState, action: Action) => {
             if (!expandingLine) break
             const { expandingWidth } = expandingLine
             return state
+              .setIn(["activeImage", "status"], "changed")
               .setIn(
-                [...pathToActiveImage, "regions", regionIndex],
+                ["activeImage", "regions", regionIndex],
                 convertExpandingLineToPolygon({
                   ...expandingLine,
                   points: expandingLine.points.map((p) =>
@@ -616,13 +658,17 @@ export default (state: MainLayoutState, action: Action) => {
           break
       }
 
-      const regions = [...(getIn(state, pathToActiveImage).regions || [])]
+      const regions = [...(getIn(state, ["activeImage"]).regions || [])]
         .map((r) =>
           setIn(r, ["editingLabels"], false).setIn(["highlighted"], false)
         )
         .concat(newRegion ? [newRegion] : [])
 
-      return setIn(state, [...pathToActiveImage, "regions"], regions)
+      return setIn(
+          newRegion ? setIn(state, ["activeImage", "status"], "changed") : state,
+          ["activeImage", "regions"],
+          regions
+      )
     }
     case "MOUSE_UP": {
       const { x, y } = action
@@ -699,8 +745,8 @@ export default (state: MainLayoutState, action: Action) => {
             return state
           }
           return setIn(
-            state,
-            [...pathToActiveImage, "regions", regionIndex],
+            setIn(state, ["activeImage", "status"], "changed"),
+            ["activeImage", "regions", regionIndex],
             newExpandingLine
           )
         }
@@ -725,13 +771,13 @@ export default (state: MainLayoutState, action: Action) => {
           editingLabels: true,
         }
       )
-      return setIn(state, [...pathToActiveImage, "regions"], newRegions)
+      return setIn(state, ["activeImage", "regions"], newRegions)
     }
     case "CLOSE_REGION_EDITOR": {
       //const { region } = action
       const regionIndex = getRegionIndex(action.region)
       if (regionIndex === null) return state
-      return setIn(state, [...pathToActiveImage, "regions", regionIndex], {
+      return setIn(state, ["activeImage", "regions", regionIndex], {
         ...(activeImage.regions || [])[regionIndex],
         editingLabels: false,
       })
@@ -740,15 +786,15 @@ export default (state: MainLayoutState, action: Action) => {
       const regionIndex = getRegionIndex(action.region)
       if (regionIndex === null) return state
       return setIn(
-        state,
-        [...pathToActiveImage, "regions"],
+        setIn(state, ["activeImage", "status"], "changed"),
+        ["activeImage", "regions"],
         (activeImage.regions || []).filter((r) => r.id !== action.region.id)
       )
     }
     case "DELETE_SELECTED_REGION": {
       return setIn(
-        state,
-        [...pathToActiveImage, "regions"],
+        setIn(state, ["activeImage", "status"], "changed"),
+        ["activeImage", "regions"],
         (activeImage.regions || []).filter((r) => !r.highlighted)
       )
     }
@@ -756,6 +802,11 @@ export default (state: MainLayoutState, action: Action) => {
       const buttonName = action.buttonName.toLowerCase()
       switch (buttonName) {
         case "prev": {
+          let status = getIn(state, ["activeImage", "status"], null)
+          if (status === "changed") {
+            return setIn(state, ["confirmAction"], action)
+          }
+
           if (currentImageIndex === null) return state
           if (currentImageIndex === 0) return state
           return setNewImage(
@@ -764,6 +815,10 @@ export default (state: MainLayoutState, action: Action) => {
           )
         }
         case "next": {
+          let status = getIn(state, ["activeImage", "status"], null)
+          if (status === "changed") {
+            return setIn(state, ["confirmAction"], action)
+          }
           if (currentImageIndex === null) return state
           if (currentImageIndex === state.images.length - 1) return state
           return setNewImage(
@@ -772,6 +827,10 @@ export default (state: MainLayoutState, action: Action) => {
           )
         }
         case "clone": {
+          let status = getIn(state, ["activeImage", "status"], null)
+          if (status === "changed") {
+            return setIn(state, ["confirmAction"], action)
+          }
           if (currentImageIndex === null) return state
           if (currentImageIndex === state.images.length - 1) return state
           return setIn(
@@ -803,6 +862,13 @@ export default (state: MainLayoutState, action: Action) => {
         case "done": {
           return state
         }
+        case "save": {
+          return setIn(
+            setIn(state, [...pathToActiveImage], activeImage),
+            [...pathToActiveImage, "status"],
+            null
+          )
+        }
         default:
           return state
       }
@@ -812,6 +878,17 @@ export default (state: MainLayoutState, action: Action) => {
         return setIn(state, ["showTags"], !state.showTags)
       } else if (action.selectedTool === "show-mask") {
         return setIn(state, ["showMask"], !state.showMask)
+      } else if (action.selectedTool === "clear-empty-regions") {
+        const regions: any = activeImage.regions
+        if (regions && regions.some((r) => !r.cls)) {
+          return setIn(
+              setIn(state, ["activeImage", "status"], "changed"),
+              ["activeImage", "regions"],
+              regions.filter((r) => r.cls)
+              )
+        } else {
+          return setIn(state, ["mode"], null)
+        }
       }
       if (action.selectedTool === "modify-allowed-area" && !state.allowedArea) {
         state = setIn(state, ["allowedArea"], { x: 0, y: 0, w: 1, h: 1 })
@@ -843,7 +920,7 @@ export default (state: MainLayoutState, action: Action) => {
       if (regions && regions.some((r) => r.editingLabels)) {
         return setIn(
           state,
-          [...pathToActiveImage, "regions"],
+          ["activeImage", "regions"],
           regions.map((r) => ({
             ...r,
             editingLabels: false,
@@ -852,7 +929,7 @@ export default (state: MainLayoutState, action: Action) => {
       } else if (regions) {
         return setIn(
           state,
-          [...pathToActiveImage, "regions"],
+          ["activeImage", "regions"],
           regions.map((r) => ({
             ...r,
             highlighted: false,

@@ -31,7 +31,7 @@ export type Image = {
   pixelSize?: { w: number, h: number },
   realSize?: { w: number, h: number, unitName: string },
   frameTime?: number,
-  processing?: boolean
+  status?: string
 }
 
 export type Mode =
@@ -64,6 +64,7 @@ export type MainLayoutStateBase = {|
   mouseDownAt?: ?{ x: number, y: number },
   fullScreen?: boolean,
   settingsOpen?: boolean,
+  confirmAction?: object,
   minRegionSize?: number,
   showTags: boolean,
   showMask: boolean,
@@ -87,6 +88,7 @@ export type MainLayoutImageAnnotationState = {|
   annotationType: "image",
 
   selectedImage?: string,
+  activeImage?: Image,
   images: Array<Image>,
   labelImages?: boolean,
 
@@ -103,6 +105,10 @@ export type MainLayoutVideoAnnotationState = {|
   videoName?: string,
   videoPlaying: boolean,
   videoDuration?: number,
+  activeImage?: {|
+      time: number,
+      regions: Array<Region>,
+  |},
   keyframes: {
     [time: number]: {|
       time: number,

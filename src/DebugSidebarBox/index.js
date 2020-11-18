@@ -4,7 +4,7 @@ import React from "react"
 import SidebarBoxContainer from "../SidebarBoxContainer"
 
 export const DebugSidebarBox = ({ state, lastAction }: any) => {
-  const image = (state.images || [])[state.selectedImage]
+  const image = state.activeImage || null
   const region = image
     ? (image.regions || []).filter((r) => r.highlighted)
     : null

@@ -28,6 +28,8 @@ import ImageSelector from "../ImageSelectorSidebarBox"
 import HistorySidebarBox from "../HistorySidebarBox"
 import useEventCallback from "use-event-callback"
 import CloudUploadIcon from "@material-ui/icons/CloudUpload"
+import LayersClearIcon from "@material-ui/icons/LayersClear"
+import ConfirmDialog from "../ConfirmDialog";
 // import {UploaderSidebarBox} from "../UploaderSidebarBox/index";
 
 const emptyArr = []
@@ -91,6 +93,7 @@ export const MainLayout = ({
   }
 
   const { currentImageIndex, activeImage } = getActiveImage(state)
+    console.log('activeImage', currentImageIndex, activeImage)
   let nextImage
   if (currentImageIndex !== null) {
     nextImage = state.images[currentImageIndex + 1]
@@ -251,7 +254,7 @@ export const MainLayout = ({
                 : !state.videoPlaying
                 ? { name: "Play" }
                 : { name: "Pause" },
-              !nextImageHasRegions && activeImage.regions && { name: "Clone" },
+              !nextImageHasRegions && activeImage && activeImage.regions && { name: "Clone" },
               { name: "Settings" },
               state.fullScreen ? { name: "Window" } : { name: "Fullscreen" },
               { name: "Save" },
@@ -313,6 +316,12 @@ export const MainLayout = ({
                 name: "modify-allowed-area",
                 helperText: "Modify Allowed Area",
               },
+              activeImage.regions && activeImage.regions.length > 0 && {
+                name: "clear-empty-regions",
+                alwaysShowing: true,
+                helperText: "Remove unclassified regions",
+                icon: <LayersClearIcon />
+              }
             ]
               .filter(Boolean)
               .filter(
@@ -375,6 +384,19 @@ export const MainLayout = ({
               dispatch({
                 type: "HEADER_BUTTON_CLICKED",
                 buttonName: "Settings",
+              })
+            }
+          />
+          <ConfirmDialog
+            open={Boolean(state.confirmAction)}
+            handleCancel={() =>
+              dispatch({
+                type: "CONFIRM_CANCEL"
+              })
+            }
+            handleOk={() =>
+              dispatch({
+                  type: "CONFIRM_OK"
               })
             }
           />

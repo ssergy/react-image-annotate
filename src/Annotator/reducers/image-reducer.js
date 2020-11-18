@@ -14,10 +14,16 @@ export default (state: MainLayoutImageAnnotationState, action: Action) => {
 
   switch (action.type) {
     case "IMAGE_OR_VIDEO_LOADED": {
-      return setIn(state, ["images", currentImageIndex, "pixelSize"], {
-        w: action.metadata.naturalWidth,
-        h: action.metadata.naturalHeight,
-      })
+      return setIn(
+          setIn(state, ["images", currentImageIndex, "pixelSize"], {
+            w: action.metadata.naturalWidth,
+            h: action.metadata.naturalHeight,
+          }),
+          ["activeImage", "pixelSize"], {
+            w: action.metadata.naturalWidth,
+            h: action.metadata.naturalHeight,
+          }
+      )
     }
     case "ADD_IMAGE": {
       const images = state.images;
