@@ -48,6 +48,7 @@ export const defaultHotkeys = [
   {
     id: "save_and_exit_sample",
     description: "Save and exit current sample",
+    binding: "shift+s"
   },
   {
     id: "exit_sample",

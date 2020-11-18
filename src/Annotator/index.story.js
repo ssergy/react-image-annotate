@@ -586,10 +586,10 @@ storiesOf("Annotator", module)
   })
   .add("Two on sample page w/ hotkeys", () => {
     return (
-      <HotKeys keyMap={defaultKeyMap}>
         <div>
           <div style={{ height: 600 }}>
             <Annotator
+              hotKeys={true}
               onExit={actionAddon("onExit")}
               regionClsList={["Alpha", "Beta", "Charlie", "Delta"]}
               imageClsList={["Alpha", "Beta", "Charlie", "Delta"]}
@@ -610,6 +610,7 @@ storiesOf("Annotator", module)
           </div>
           <div style={{ height: 600 }}>
             <Annotator
+              hotKeys={true}
               onExit={actionAddon("onExit")}
               middlewares={[
                 (store) => (next) => (action) => {
@@ -627,7 +628,6 @@ storiesOf("Annotator", module)
             />
           </div>
         </div>
-      </HotKeys>
     )
   })
   .add("CORs Error (Pixel Segmentation)", () => (

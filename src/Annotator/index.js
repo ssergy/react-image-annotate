@@ -19,6 +19,19 @@ import historyHandler from "./reducers/history-handler.js"
 
 import useEventCallback from "use-event-callback"
 import makeImmutable, { without } from "seamless-immutable"
+import {HotKeys} from "react-hotkeys";
+import {defaultKeyMap} from "../ShortcutsManager";
+
+const HotkeysWrapper = ({hotKeys, children}) => {
+    if (hotKeys) {
+        return <HotKeys keyMap={defaultKeyMap}>
+            {children}
+        </HotKeys>
+    }
+    return <React.Fragment>
+        {children}
+    </React.Fragment>
+};
 
 type Props = {
   taskDescription?: string,
@@ -45,6 +58,7 @@ type Props = {
   autoSegmentationOptions?:
     | {| type: "simple" |}
     | {| type: "autoseg", maxClusters?: number, slicWeightFactor?: number |},
+  hotKeys?: boolean
 }
 
 export const Annotator = ({
@@ -80,6 +94,7 @@ export const Annotator = ({
   onUploadClick,
   keypointDefinitions,
   autoSegmentationOptions = { type: "autoseg" },
+  hotKeys = false
 }: Props) => {
   if (typeof selectedImage === "string") {
     selectedImage = (images || []).findIndex((img) => img.src === selectedImage)
@@ -165,17 +180,19 @@ export const Annotator = ({
     return 'Missing required prop "images" or "videoSrc"'
 
   return (
-    <SettingsProvider>
-      <MainLayout
-        RegionEditLabel={RegionEditLabel}
-        alwaysShowNextButton={Boolean(onNextImage)}
-        alwaysShowPrevButton={Boolean(onPrevImage)}
-        showUploadButton={Boolean(onUploadClick)}
-        state={state}
-        dispatch={dispatch}
-        onRegionClassAdded={onRegionClassAdded}
-      />
-    </SettingsProvider>
+    <HotkeysWrapper hotKeys={hotKeys}>
+      <SettingsProvider>
+        <MainLayout
+          RegionEditLabel={RegionEditLabel}
+          alwaysShowNextButton={Boolean(onNextImage)}
+          alwaysShowPrevButton={Boolean(onPrevImage)}
+          showUploadButton={Boolean(onUploadClick)}
+          state={state}
+          dispatch={dispatch}
+          onRegionClassAdded={onRegionClassAdded}
+        />
+      </SettingsProvider>
+    </HotkeysWrapper>
   )
 }
 
