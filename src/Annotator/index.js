@@ -157,11 +157,13 @@ export const Annotator = ({
         return onPrevImage(without(state, "history"))
       } else if (action.buttonName === "Upload") {
         return onUploadClick()
-      } else if (action.buttonName === "Save") {
-        return Promise.resolve(onSaveItem(state.activeImage)).then(() => {
-          dispatchToReducer(action)
-        })
       }
+    } else if (action.type === "CONFIRM_OK" || (action.type === "HEADER_BUTTON_CLICKED" && action.buttonName === "Save")) {
+      return Promise.resolve(onSaveItem(state.activeImage)).then(() => {
+        dispatchToReducer(action)
+      }).catch(() => {
+        // image was not saved, do nothing
+      })
     }
     dispatchToReducer(action)
   })
