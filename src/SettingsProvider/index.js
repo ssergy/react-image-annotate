@@ -6,13 +6,14 @@ const defaultSettings = {
   showCrosshairs: false,
   showHighlightBox: true,
   wasdMode: true,
+  videoPlaybackSpeed: '1x'
 }
 
 export const SettingsContext = createContext(defaultSettings)
 
 const pullSettingsFromLocalStorage = () => {
   if (!window || !window.localStorage) return {}
-  let settings = {}
+  let settings = {...defaultSettings}
   for (let i = 0; i < window.localStorage.length; i++) {
     const key = window.localStorage.key(i)
     if (key.startsWith("settings_")) {

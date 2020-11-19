@@ -19,7 +19,7 @@ export const ConfirmDialog = ({ open, handleOk, handleCancel }) => {
         </DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleCancel} color="primary">Cancel</Button>
+        <Button onClick={handleCancel} color="primary">Discard</Button>
         <Button onClick={handleOk} color="primary" autoFocus>Save</Button>
       </DialogActions>
     </Dialog>

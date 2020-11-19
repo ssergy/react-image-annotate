@@ -42,21 +42,20 @@ export default (state: MainLayoutState, action: Action) => {
     state = setIn(state, ["lastAction"], action)
   }
 
+  const confirmAction = getIn(state, ["confirmAction"], null)
+  if (confirmAction !== null && (action.type === "CONFIRM_CANCEL" || action.type === "CONFIRM_OK")) {
+    state = setIn(state, ["activeImage", "status"], null)
+  }
+
   const { currentImageIndex, pathToActiveImage, activeImage } = getActiveImage(
     state
   )
 
-  const confirmAction = getIn(state, ["confirmAction"], null)
   if (confirmAction !== null && activeImage && (action.type === "CONFIRM_CANCEL" || action.type === "CONFIRM_OK")) {
-    state = setIn(
-        setIn(
-            setIn(state, [...pathToActiveImage], activeImage),
-            [...pathToActiveImage, "status"],
-            null
-        ),
-        ["confirmAction"],
-        null
-    )
+    if (action.type === "CONFIRM_OK") {
+      state = setIn(state, [...pathToActiveImage], activeImage)
+    }
+    state = setIn(state, ["confirmAction"], null)
     action = confirmAction
   }
 
@@ -864,7 +863,11 @@ export default (state: MainLayoutState, action: Action) => {
         }
         case "save": {
           return setIn(
-            setIn(state, [...pathToActiveImage], activeImage),
+            setIn(
+              setIn(state, ["activeImage", "status"], null),
+              [...pathToActiveImage],
+              activeImage
+            ),
             [...pathToActiveImage, "status"],
             null
           )

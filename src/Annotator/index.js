@@ -49,6 +49,7 @@ type Props = {
   pointDistancePrecision?: number,
   RegionEditLabel?: Node,
   onExit: (MainLayoutState) => any,
+  onSaveItem: (Image) => Promise,
   videoTime?: number,
   videoSrc?: string,
   keyframes?: Object,
@@ -89,6 +90,7 @@ export const Annotator = ({
   videoTime = 0,
   videoName,
   onExit,
+  onSaveItem,
   onNextImage,
   onPrevImage,
   onUploadClick,
@@ -155,12 +157,13 @@ export const Annotator = ({
         return onPrevImage(without(state, "history"))
       } else if (action.buttonName === "Upload") {
         return onUploadClick()
+      } else if (action.buttonName === "Save") {
+        return Promise.resolve(onSaveItem(state.activeImage)).then(() => {
+          dispatchToReducer(action)
+        })
       }
     }
     dispatchToReducer(action)
-    if (action.buttonName === "Save") {
-      onExit(without(state, "history"))
-    }
   })
 
   const onRegionClassAdded = useEventCallback((cls) => {
@@ -171,7 +174,6 @@ export const Annotator = ({
   })
 
   useEffect(() => {
-    console.log('useEffect selectedImage', selectedImage)
     if (selectedImage === undefined) return
     dispatchToReducer({
       type: "SELECT_IMAGE",

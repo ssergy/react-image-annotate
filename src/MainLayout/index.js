@@ -93,7 +93,7 @@ export const MainLayout = ({
   }
 
   const { currentImageIndex, activeImage } = getActiveImage(state)
-    console.log('activeImage', currentImageIndex, activeImage)
+
   let nextImage
   if (currentImageIndex !== null) {
     nextImage = state.images[currentImageIndex + 1]
@@ -206,6 +206,8 @@ export const MainLayout = ({
   const nextImageHasRegions =
     !nextImage || (nextImage.regions && nextImage.regions.length > 0)
 
+  const activeImageNoEmptyRegions = (!activeImage || !activeImage.regions || !activeImage.regions.length || !activeImage.regions.filter(i => !i.cls).length)
+
   return (
     <FullScreenContainer>
       <FullScreen
@@ -247,8 +249,8 @@ export const MainLayout = ({
             ].filter(Boolean)}
             headerItems={[
               showUploadButton ? { name: "Upload", icon: <CloudUploadIcon/> } : null,
-              { name: "Prev" },
-              { name: "Next" },
+              { name: "Prev", disabled: !currentImageIndex },
+              { name: "Next", disabled: !nextImage },
               state.annotationType !== "video"
                 ? null
                 : !state.videoPlaying
@@ -257,7 +259,7 @@ export const MainLayout = ({
               !nextImageHasRegions && activeImage && activeImage.regions && { name: "Clone" },
               { name: "Settings" },
               state.fullScreen ? { name: "Window" } : { name: "Fullscreen" },
-              { name: "Save" },
+              { name: "Save", disabled: !activeImage || activeImage.status !== 'changed' },
             ].filter(Boolean)}
             onClickHeaderItem={onClickHeaderItem}
             onClickIconSidebarItem={onClickIconSidebarItem}
@@ -316,11 +318,12 @@ export const MainLayout = ({
                 name: "modify-allowed-area",
                 helperText: "Modify Allowed Area",
               },
-              activeImage.regions && activeImage.regions.length > 0 && {
+              {
                 name: "clear-empty-regions",
                 alwaysShowing: true,
-                helperText: "Remove unclassified regions",
-                icon: <LayersClearIcon />
+                helperText: activeImageNoEmptyRegions ? "" : "Remove unclassified regions",
+                icon: <LayersClearIcon />,
+                disabled: activeImageNoEmptyRegions
               }
             ]
               .filter(Boolean)
@@ -347,6 +350,7 @@ export const MainLayout = ({
                  <ImageSelector
                    onSelect={action("SELECT_IMAGE", "image", "imageIndex")}
                    images={state.images}
+                   selectedImageIndex={currentImageIndex}
                  />
               ),
               <RegionSelector
