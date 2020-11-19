@@ -28,6 +28,8 @@ import ImageSelector from "../ImageSelectorSidebarBox"
 import HistorySidebarBox from "../HistorySidebarBox"
 import useEventCallback from "use-event-callback"
 import CloudUploadIcon from "@material-ui/icons/CloudUpload"
+import LayersClearIcon from "@material-ui/icons/LayersClear"
+import ConfirmDialog from "../ConfirmDialog";
 // import {UploaderSidebarBox} from "../UploaderSidebarBox/index";
 
 const emptyArr = []
@@ -91,6 +93,7 @@ export const MainLayout = ({
   }
 
   const { currentImageIndex, activeImage } = getActiveImage(state)
+
   let nextImage
   if (currentImageIndex !== null) {
     nextImage = state.images[currentImageIndex + 1]
@@ -203,6 +206,8 @@ export const MainLayout = ({
   const nextImageHasRegions =
     !nextImage || (nextImage.regions && nextImage.regions.length > 0)
 
+  const activeImageNoEmptyRegions = (!activeImage || !activeImage.regions || !activeImage.regions.length || !activeImage.regions.filter(i => !i.cls).length)
+
   return (
     <FullScreenContainer>
       <FullScreen
@@ -244,17 +249,17 @@ export const MainLayout = ({
             ].filter(Boolean)}
             headerItems={[
               showUploadButton ? { name: "Upload", icon: <CloudUploadIcon/> } : null,
-              { name: "Prev" },
-              { name: "Next" },
+              { name: "Prev", disabled: !currentImageIndex },
+              { name: "Next", disabled: !nextImage },
               state.annotationType !== "video"
                 ? null
                 : !state.videoPlaying
                 ? { name: "Play" }
                 : { name: "Pause" },
-              !nextImageHasRegions && activeImage.regions && { name: "Clone" },
+              !nextImageHasRegions && activeImage && activeImage.regions && { name: "Clone" },
               { name: "Settings" },
               state.fullScreen ? { name: "Window" } : { name: "Fullscreen" },
-              { name: "Save" },
+              { name: "Save", disabled: !activeImage || activeImage.status !== 'changed' },
             ].filter(Boolean)}
             onClickHeaderItem={onClickHeaderItem}
             onClickIconSidebarItem={onClickIconSidebarItem}
@@ -313,6 +318,13 @@ export const MainLayout = ({
                 name: "modify-allowed-area",
                 helperText: "Modify Allowed Area",
               },
+              {
+                name: "clear-empty-regions",
+                alwaysShowing: true,
+                helperText: activeImageNoEmptyRegions ? "" : "Remove unclassified regions",
+                icon: <LayersClearIcon />,
+                disabled: activeImageNoEmptyRegions
+              }
             ]
               .filter(Boolean)
               .filter(
@@ -338,6 +350,7 @@ export const MainLayout = ({
                  <ImageSelector
                    onSelect={action("SELECT_IMAGE", "image", "imageIndex")}
                    images={state.images}
+                   selectedImageIndex={currentImageIndex}
                  />
               ),
               <RegionSelector
@@ -375,6 +388,19 @@ export const MainLayout = ({
               dispatch({
                 type: "HEADER_BUTTON_CLICKED",
                 buttonName: "Settings",
+              })
+            }
+          />
+          <ConfirmDialog
+            open={Boolean(state.confirmAction)}
+            handleCancel={() =>
+              dispatch({
+                type: "CONFIRM_CANCEL"
+              })
+            }
+            handleOk={() =>
+              dispatch({
+                  type: "CONFIRM_OK"
               })
             }
           />

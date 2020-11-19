@@ -22,6 +22,9 @@ export default () => {
                      onUploadClick={() => {
                          console.log('upload')
                      }}
+                     onSaveItem={(image) => {
+                       console.log('save active image', image)
+                     }}
                      onExit={(output) => {
                          console.log('output', output)
                      }}

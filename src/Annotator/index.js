@@ -49,6 +49,7 @@ type Props = {
   pointDistancePrecision?: number,
   RegionEditLabel?: Node,
   onExit: (MainLayoutState) => any,
+  onSaveItem: (Image) => Promise,
   videoTime?: number,
   videoSrc?: string,
   keyframes?: Object,
@@ -89,6 +90,7 @@ export const Annotator = ({
   videoTime = 0,
   videoName,
   onExit,
+  onSaveItem,
   onNextImage,
   onPrevImage,
   onUploadClick,
@@ -133,6 +135,7 @@ export const Annotator = ({
       ...(annotationType === "image"
         ? {
             selectedImage,
+            activeImage: selectedImage === undefined ? null : images[selectedImage],
             images,
             selectedImageFrameTime:
               images && images.length > 0 ? images[0].frameTime : undefined,
@@ -146,7 +149,7 @@ export const Annotator = ({
 
   const dispatch = useEventCallback((action: Action) => {
     if (action.type === "HEADER_BUTTON_CLICKED") {
-      if (["Exit", "Done", "Save", "Complete"].includes(action.buttonName)) {
+      if (["Exit", "Done"/*, "Save"*/, "Complete"].includes(action.buttonName)) {
         return onExit(without(state, "history"))
       } else if (action.buttonName === "Next" && onNextImage) {
         return onNextImage(without(state, "history"))
@@ -154,6 +157,10 @@ export const Annotator = ({
         return onPrevImage(without(state, "history"))
       } else if (action.buttonName === "Upload") {
         return onUploadClick()
+      } else if (action.buttonName === "Save") {
+        return Promise.resolve(onSaveItem(state.activeImage)).then(() => {
+          dispatchToReducer(action)
+        })
       }
     }
     dispatchToReducer(action)

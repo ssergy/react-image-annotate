@@ -15,7 +15,7 @@ const useStyles = makeStyles({
   img: { width: 40, height: 40, borderRadius: 8, marginRight: 8 },
 })
 
-export const ImageSelectorSidebarBox = ({ images, onSelect }) => {
+export const ImageSelectorSidebarBox = ({ images, selectedImageIndex, onSelect }) => {
   const classes = useStyles()
   return (
     <SidebarBoxContainer
@@ -26,7 +26,7 @@ export const ImageSelectorSidebarBox = ({ images, onSelect }) => {
       <div>
         <List>
           {images.map((img, i) => (
-            <ListItem button onClick={() => onSelect(img, i)} dense key={i}>
+            <ListItem button onClick={() => onSelect(img, i)} selected={selectedImageIndex === i} dense key={i}>
               <img className={classes.img} src={img.src} alt="" />
               <ListItemText
                 primary={img.name}
@@ -46,5 +46,5 @@ export default memo(ImageSelectorSidebarBox, (prevProps, nextProps) =>
   isEqual(
     prevProps.images.map(mapUsedImageProps),
     nextProps.images.map(mapUsedImageProps)
-  )
+  ) && prevProps.selectedImageIndex === nextProps.selectedImageIndex
 )

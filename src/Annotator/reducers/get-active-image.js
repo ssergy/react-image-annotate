@@ -11,11 +11,12 @@ export default (state) => {
       activeImage = null
     } else {
       pathToActiveImage = ["images", currentImageIndex]
-      activeImage = getIn(state, pathToActiveImage)
+      //activeImage = getIn(state, pathToActiveImage)
     }
   } else if (state.annotationType === "video") {
     pathToActiveImage = ["keyframes", state.currentVideoTime || 0]
-    activeImage = getIn(state, pathToActiveImage) || null
+    //activeImage = getIn(state, pathToActiveImage) || null
   }
+  activeImage = getIn(state, ["activeImage"], null)
   return { currentImageIndex, pathToActiveImage, activeImage }
 }
