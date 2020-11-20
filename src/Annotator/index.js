@@ -94,6 +94,7 @@ export const Annotator = ({
   onNextImage,
   onPrevImage,
   onUploadClick,
+  onPreprocessClick,
   keypointDefinitions,
   autoSegmentationOptions = { type: "autoseg" },
   hotKeys = false
@@ -157,6 +158,8 @@ export const Annotator = ({
         return onPrevImage(without(state, "history"))
       } else if (action.buttonName === "Upload") {
         return onUploadClick()
+      } else if (action.buttonName === "Preprocess") {
+        return onPreprocessClick()
       }
     } else if (action.type === "CONFIRM_OK" || (action.type === "HEADER_BUTTON_CLICKED" && action.buttonName === "Save")) {
       return Promise.resolve(onSaveItem(state.activeImage)).then(() => {
@@ -196,6 +199,7 @@ export const Annotator = ({
           alwaysShowNextButton={Boolean(onNextImage)}
           alwaysShowPrevButton={Boolean(onPrevImage)}
           showUploadButton={Boolean(onUploadClick)}
+          showPreprocessButton={Boolean(onPreprocessClick)}
           state={state}
           dispatch={dispatch}
           onRegionClassAdded={onRegionClassAdded}

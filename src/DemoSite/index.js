@@ -13,7 +13,8 @@ export default () => {
                      images={[{
                          src: "https://placekitten.com/408/287",
                          name: "Image 1",
-                         regions: []
+                         regions: [],
+                         status: 'locked'
                      }, {
                          src: "https://placekitten.com/408/358",
                          name: "Image 2",
@@ -21,6 +22,9 @@ export default () => {
                      }]}
                      onUploadClick={() => {
                          console.log('upload')
+                     }}
+                     onPreprocessClick={() => {
+                       console.log('Preprocess')
                      }}
                      onSaveItem={(image) => {
                        console.log('save active image', image)

@@ -1,4 +1,4 @@
-import { grey } from "@material-ui/core/colors"
+import { grey, pink } from "@material-ui/core/colors"
 
 export default {
   container: {
@@ -23,4 +23,8 @@ export default {
     color: grey[700],
     paddingLeft: 16,
   },
+  headerStatus: {
+    color: pink[700],
+    paddingLeft: 16,
+  }
 }

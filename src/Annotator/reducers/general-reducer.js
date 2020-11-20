@@ -51,6 +51,8 @@ export default (state: MainLayoutState, action: Action) => {
     state
   )
 
+  const activeImageLocked = activeImage && activeImage.status === 'locked'
+
   if (confirmAction !== null && activeImage && (action.type === "CONFIRM_CANCEL" || action.type === "CONFIRM_OK")) {
     if (action.type === "CONFIRM_OK") {
       state = setIn(state, [...pathToActiveImage], activeImage)
@@ -150,6 +152,9 @@ export default (state: MainLayoutState, action: Action) => {
       return setNewImage(action.image, action.imageIndex)
     }
     case "CHANGE_REGION": {
+      if (activeImageLocked) {
+        return state
+      }
       let changed =  false
       const regionIndex = getRegionIndex(action.region)
       if (regionIndex === null) return state
@@ -173,6 +178,9 @@ export default (state: MainLayoutState, action: Action) => {
       )
     }
     case "CHANGE_IMAGE": {
+      if (activeImageLocked) {
+        return state
+      }
       if (!activeImage) return state
       const { delta } = action
       for (const key of Object.keys(delta)) {
@@ -184,6 +192,9 @@ export default (state: MainLayoutState, action: Action) => {
       return state
     }
     case "SELECT_REGION": {
+      if (activeImageLocked) {
+        return state
+      }
       const { region } = action
       const regionIndex = getRegionIndex(action.region)
       if (regionIndex === null) return state
@@ -195,6 +206,9 @@ export default (state: MainLayoutState, action: Action) => {
       return setIn(state, ["activeImage", "regions"], regions)
     }
     case "BEGIN_MOVE_POINT": {
+      if (activeImageLocked) {
+        return state
+      }
       state = closeEditors(state)
       return setIn(state, ["mode"], {
         mode: "MOVE_REGION",
@@ -202,6 +216,9 @@ export default (state: MainLayoutState, action: Action) => {
       })
     }
     case "BEGIN_BOX_TRANSFORM": {
+      if (activeImageLocked) {
+        return state
+      }
       const { box, directions } = action
       state = closeEditors(state)
       if (directions[0] === 0 && directions[1] === 0) {
@@ -216,6 +233,9 @@ export default (state: MainLayoutState, action: Action) => {
       }
     }
     case "BEGIN_MOVE_POLYGON_POINT": {
+      if (activeImageLocked) {
+        return state
+      }
       const { polygon, pointIndex } = action
       state = closeEditors(state)
       if (
@@ -241,6 +261,9 @@ export default (state: MainLayoutState, action: Action) => {
       })
     }
     case "BEGIN_MOVE_KEYPOINT": {
+      if (activeImageLocked) {
+        return state
+      }
       const { region, keypointId } = action
       state = closeEditors(state)
       state = saveToHistory(state, "Move Keypoint")
@@ -251,6 +274,9 @@ export default (state: MainLayoutState, action: Action) => {
       })
     }
     case "ADD_POLYGON_POINT": {
+      if (activeImageLocked) {
+        return state
+      }
       const { polygon, point, pointIndex } = action
       const regionIndex = getRegionIndex(polygon)
       if (regionIndex === null) return state
@@ -754,6 +780,9 @@ export default (state: MainLayoutState, action: Action) => {
       }
     }
     case "OPEN_REGION_EDITOR": {
+      if (activeImageLocked) {
+        return state
+      }
       //const { region } = action
       const regionIndex = getRegionIndex(action.region)
       if (regionIndex === null) return state
@@ -782,6 +811,9 @@ export default (state: MainLayoutState, action: Action) => {
       })
     }
     case "DELETE_REGION": {
+      if (activeImageLocked) {
+        return state
+      }
       const regionIndex = getRegionIndex(action.region)
       if (regionIndex === null) return state
       return setIn(
@@ -791,6 +823,9 @@ export default (state: MainLayoutState, action: Action) => {
       )
     }
     case "DELETE_SELECTED_REGION": {
+      if (activeImageLocked) {
+        return state
+      }
       return setIn(
         setIn(state, ["activeImage", "status"], "changed"),
         ["activeImage", "regions"],
@@ -877,6 +912,9 @@ export default (state: MainLayoutState, action: Action) => {
       }
     }
     case "SELECT_TOOL": {
+      if (activeImageLocked) {
+        return state
+      }
       if (action.selectedTool === "show-tags") {
         return setIn(state, ["showTags"], !state.showTags)
       } else if (action.selectedTool === "show-mask") {

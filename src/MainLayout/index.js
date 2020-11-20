@@ -30,6 +30,7 @@ import useEventCallback from "use-event-callback"
 import CloudUploadIcon from "@material-ui/icons/CloudUpload"
 import LayersClearIcon from "@material-ui/icons/LayersClear"
 import ConfirmDialog from "../ConfirmDialog";
+import SpellcheckIcon from "@material-ui/icons/Spellcheck"
 // import {UploaderSidebarBox} from "../UploaderSidebarBox/index";
 
 const emptyArr = []
@@ -57,6 +58,7 @@ type Props = {
   alwaysShowNextButton?: boolean,
   alwaysShowPrevButton?: boolean,
   showUploadButton?: boolean,
+  showPreprocessButton?: boolean,
   onRegionClassAdded: () => {},
 }
 
@@ -66,6 +68,7 @@ export const MainLayout = ({
   alwaysShowNextButton = false,
   alwaysShowPrevButton = false,
   showUploadButton = false,
+  showPreprocessButton = false,
   RegionEditLabel,
   onRegionClassAdded,
 }: Props) => {
@@ -207,6 +210,7 @@ export const MainLayout = ({
     !nextImage || (nextImage.regions && nextImage.regions.length > 0)
 
   const activeImageNoEmptyRegions = (!activeImage || !activeImage.regions || !activeImage.regions.length || !activeImage.regions.filter(i => !i.cls).length)
+  const activeImageLocked = activeImage && activeImage.status === 'locked'
 
   return (
     <FullScreenContainer>
@@ -244,11 +248,12 @@ export const MainLayout = ({
                   keyframes={state.keyframes}
                 />
               ) : activeImage ? (
-                <div key="image" className={classes.headerTitle}>{activeImage.name}</div>
+                <div key="image" className={classes.headerTitle}>{activeImage.name}{activeImageLocked && <span className={classes.headerStatus}>(locked)</span>}</div>
               ) : null,
             ].filter(Boolean)}
             headerItems={[
               showUploadButton ? { name: "Upload", icon: <CloudUploadIcon/> } : null,
+              showPreprocessButton ? { name: "Preprocess", icon: <SpellcheckIcon/> } : null,
               { name: "Prev", disabled: !currentImageIndex },
               { name: "Next", disabled: !nextImage },
               state.annotationType !== "video"
@@ -259,7 +264,7 @@ export const MainLayout = ({
               !nextImageHasRegions && activeImage && activeImage.regions && { name: "Clone" },
               { name: "Settings" },
               state.fullScreen ? { name: "Window" } : { name: "Fullscreen" },
-              { name: "Save", disabled: !activeImage || activeImage.status !== 'changed' },
+              { name: "Save", disabled: !activeImage || activeImage.status !== 'changed' || activeImageLocked },
             ].filter(Boolean)}
             onClickHeaderItem={onClickHeaderItem}
             onClickIconSidebarItem={onClickIconSidebarItem}
@@ -271,59 +276,70 @@ export const MainLayout = ({
             iconSidebarItems={[
               {
                 name: "select",
-                helperText: "Select",
+                helperText: activeImageLocked ? "" : "Select",
                 alwaysShowing: true,
+                disabled: activeImageLocked
               },
               {
                 name: "pan",
-                helperText: "Drag/Pan",
+                helperText: activeImageLocked ? "" : "Drag/Pan",
                 alwaysShowing: true,
+                disabled: activeImageLocked
               },
               {
                 name: "zoom",
-                helperText: "Zoom In/Out",
+                helperText: activeImageLocked ? "" : "Zoom In/Out",
                 alwaysShowing: true,
+                disabled: activeImageLocked
               },
               {
                 name: "show-tags",
-                helperText: "Show / Hide Tags",
+                helperText: activeImageLocked ? "" : "Show / Hide Tags",
                 alwaysShowing: true,
+                disabled: activeImageLocked
               },
               {
                 name: "create-point",
-                helperText: "Add Point",
+                helperText: activeImageLocked ? "" : "Add Point",
+                disabled: activeImageLocked
               },
               {
                 name: "create-box",
-                helperText: "Add Bounding Box",
+                helperText: activeImageLocked ? "" : "Add Bounding Box",
+                disabled: activeImageLocked
               },
               {
                 name: "create-polygon",
-                helperText: "Add Polygon",
+                helperText: activeImageLocked ? "" : "Add Polygon",
+                disabled: activeImageLocked
               },
               {
                 name: "create-expanding-line",
-                helperText: "Add Expanding Line",
+                helperText: activeImageLocked ? "" : "Add Expanding Line",
+                disabled: activeImageLocked
               },
               {
                 name: "create-keypoints",
-                helperText: "Add Keypoints (Pose)",
+                helperText: activeImageLocked ? "" : "Add Keypoints (Pose)",
+                disabled: activeImageLocked
               },
               state.fullImageSegmentationMode && {
                 name: "show-mask",
                 alwaysShowing: true,
-                helperText: "Show / Hide Mask",
+                helperText: activeImageLocked ? "" : "Show / Hide Mask",
+                disabled: activeImageLocked
               },
               {
                 name: "modify-allowed-area",
-                helperText: "Modify Allowed Area",
+                helperText: activeImageLocked ? "" : "Modify Allowed Area",
+                disabled: activeImageLocked
               },
               {
                 name: "clear-empty-regions",
                 alwaysShowing: true,
-                helperText: activeImageNoEmptyRegions ? "" : "Remove unclassified regions",
+                helperText: activeImageNoEmptyRegions || activeImageLocked ? "" : "Remove unclassified regions",
                 icon: <LayersClearIcon />,
-                disabled: activeImageNoEmptyRegions
+                disabled: activeImageNoEmptyRegions || activeImageLocked
               }
             ]
               .filter(Boolean)
