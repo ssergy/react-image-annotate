@@ -137,7 +137,7 @@ export const Annotator = ({
       } else if (action.buttonName === "Upload") {
         return onUploadClick()
       } else if (action.buttonName === "Preprocessing") {
-        return onPreprocessClick(state.activeImage.id)
+        return onPreprocessClick(state.activeImage ? state.activeImage.id : null)
       }
     } else if (action.type === "CONFIRM_OK" || (action.type === "HEADER_BUTTON_CLICKED" && action.buttonName === "Save")) {
       return Promise.resolve(onSaveItem(state.activeImage)).then(() => {
