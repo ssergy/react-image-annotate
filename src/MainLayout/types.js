@@ -30,7 +30,6 @@ export type Image = {
   regions?: Array<Region>,
   pixelSize?: { w: number, h: number },
   realSize?: { w: number, h: number, unitName: string },
-  frameTime?: number,
   status?: string
 }
 

@@ -123,7 +123,6 @@ export const Annotator = ({
       selectedImage,
       activeImage: selectedImage === undefined ? null : images[selectedImage],
       images,
-      selectedImageFrameTime: images && images.length > 0 ? images[0].frameTime : undefined,
     })
   )
 
@@ -138,7 +137,7 @@ export const Annotator = ({
       } else if (action.buttonName === "Upload") {
         return onUploadClick()
       } else if (action.buttonName === "Preprocessing") {
-        return onPreprocessClick()
+        return onPreprocessClick(state.activeImage.id)
       }
     } else if (action.type === "CONFIRM_OK" || (action.type === "HEADER_BUTTON_CLICKED" && action.buttonName === "Save")) {
       return Promise.resolve(onSaveItem(state.activeImage)).then(() => {
