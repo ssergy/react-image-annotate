@@ -37,13 +37,6 @@ export const SettingsDialog = ({ open, onClose }) => {
                 title: "WASD Mode",
                 name: "wasdMode",
               },
-              {
-                type: "dropdown",
-                title: "Video Playback Speed",
-                name: "videoPlaybackSpeed",
-                defaultValue: "1x",
-                choices: ["0.25x", "0.5x", "1x", "2x"],
-              },
             ],
           }}
         />

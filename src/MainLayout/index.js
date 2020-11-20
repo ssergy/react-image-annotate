@@ -10,18 +10,14 @@ import useKey from "use-key-hook"
 import classnames from "classnames"
 import { useSettings } from "../SettingsProvider"
 import SettingsDialog from "../SettingsDialog"
-// import Fullscreen from "../Fullscreen"
 import { FullScreen, useFullScreenHandle } from "react-full-screen"
 import getActiveImage from "../Annotator/reducers/get-active-image"
-import useImpliedVideoRegions from "./use-implied-video-regions"
 import { useDispatchHotkeyHandlers } from "../ShortcutsManager"
 import { withHotKeys } from "react-hotkeys"
 import iconDictionary from "./icon-dictionary"
-import KeyframeTimeline from "../KeyframeTimeline"
 import Workspace from "react-material-workspace-layout/Workspace"
 import DebugBox from "../DebugSidebarBox"
 import TagsSidebarBox from "../TagsSidebarBox"
-import KeyframesSelector from "../KeyframesSelectorSidebarBox"
 import TaskDescription from "../TaskDescriptionSidebarBox"
 import RegionSelector from "../RegionSelectorSidebarBox"
 import ImageSelector from "../ImageSelectorSidebarBox"
@@ -31,7 +27,6 @@ import CloudUploadIcon from "@material-ui/icons/CloudUpload"
 import LayersClearIcon from "@material-ui/icons/LayersClear"
 import ConfirmDialog from "../ConfirmDialog";
 import SpellcheckIcon from "@material-ui/icons/Spellcheck"
-// import {UploaderSidebarBox} from "../UploaderSidebarBox/index";
 
 const emptyArr = []
 const useStyles = makeStyles(styles)
@@ -106,11 +101,8 @@ export const MainLayout = ({
     detectKeys: [27],
   })
 
-  //const isAVideoFrame = activeImage && activeImage.frameTime !== undefined
   const innerContainerRef = useRef()
   const hotkeyHandlers = useDispatchHotkeyHandlers({ dispatch })
-
-  let impliedVideoRegions = useImpliedVideoRegions(state)
 
   const refocusOnMouseEvent = useCallback((e) => {
     if (!innerContainerRef.current) return
@@ -137,25 +129,14 @@ export const MainLayout = ({
       modifyingAllowedArea={state.selectedTool === "modify-allowed-area"}
       regionClsList={state.regionClsList}
       regionTagList={state.regionTagList}
-      regions={
-        state.annotationType === "image"
-          ? (activeImage ? activeImage.regions : []) || []
-          : impliedVideoRegions
-      }
+      regions={activeImage && activeImage.regions ? activeImage.regions : []}
       realSize={activeImage ? activeImage.realSize : undefined}
-      videoPlaying={state.videoPlaying}
-      imageSrc={state.annotationType === "image" && activeImage ? activeImage.src : null}
-      videoSrc={state.annotationType === "video" ? state.videoSrc : null}
+      imageSrc={activeImage ? activeImage.src : null}
       pointDistancePrecision={state.pointDistancePrecision}
       createWithPrimary={state.selectedTool.includes("create")}
       dragWithPrimary={state.selectedTool === "pan"}
       zoomWithPrimary={state.selectedTool === "zoom"}
       showPointDistances={state.showPointDistances}
-      videoTime={
-        state.annotationType === "image"
-          ? state.selectedImageFrameTime
-          : state.currentVideoTime
-      }
       keypointDefinitions={state.keypointDefinitions}
       onMouseMove={action("MOUSE_MOVE")}
       onMouseDown={action("MOUSE_DOWN")}
@@ -186,8 +167,6 @@ export const MainLayout = ({
       onImageLoaded={action("IMAGE_LOADED", "image")}
       RegionEditLabel={RegionEditLabel}
       onImageOrVideoLoaded={action("IMAGE_OR_VIDEO_LOADED", "metadata")}
-      onChangeVideoTime={action("CHANGE_VIDEO_TIME", "newTime")}
-      onChangeVideoPlaying={action("CHANGE_VIDEO_PLAYING", "isPlaying")}
       onRegionClassAdded={onRegionClassAdded}
     />
   )
@@ -239,28 +218,15 @@ export const MainLayout = ({
             allowFullscreen
             iconDictionary={iconDictionary}
             headerLeftSide={[
-              state.annotationType === "video" ? (
-                <KeyframeTimeline
-                  key="video"
-                  currentTime={state.currentVideoTime}
-                  duration={state.videoDuration}
-                  onChangeCurrentTime={action("CHANGE_VIDEO_TIME", "newTime")}
-                  keyframes={state.keyframes}
-                />
-              ) : activeImage ? (
+              activeImage ? (
                 <div key="image" className={classes.headerTitle}>{activeImage.name}{activeImageLocked && <span className={classes.headerStatus}>(locked)</span>}</div>
               ) : null,
             ].filter(Boolean)}
             headerItems={[
               showUploadButton ? { name: "Upload", icon: <CloudUploadIcon/> } : null,
-              showPreprocessButton ? { name: "Preprocess", icon: <SpellcheckIcon/> } : null,
+              showPreprocessButton ? { name: "Preprocessing", icon: <SpellcheckIcon/> } : null,
               { name: "Prev", disabled: !currentImageIndex },
               { name: "Next", disabled: !nextImage },
-              state.annotationType !== "video"
-                ? null
-                : !state.videoPlaying
-                ? { name: "Play" }
-                : { name: "Pause" },
               !nextImageHasRegions && activeImage && activeImage.regions && { name: "Clone" },
               { name: "Settings" },
               state.fullScreen ? { name: "Window" } : { name: "Fullscreen" },
@@ -276,52 +242,52 @@ export const MainLayout = ({
             iconSidebarItems={[
               {
                 name: "select",
-                helperText: activeImageLocked ? "" : "Select",
+                helperText: !activeImage || activeImageLocked ? "" : "Select",
                 alwaysShowing: true,
-                disabled: activeImageLocked
+                disabled: !activeImage || activeImageLocked
               },
               {
                 name: "pan",
-                helperText: activeImageLocked ? "" : "Drag/Pan",
+                helperText: !activeImage || activeImageLocked ? "" : "Drag/Pan",
                 alwaysShowing: true,
-                disabled: activeImageLocked
+                disabled: !activeImage || activeImageLocked
               },
               {
                 name: "zoom",
-                helperText: activeImageLocked ? "" : "Zoom In/Out",
+                helperText: !activeImage || activeImageLocked ? "" : "Zoom In/Out",
                 alwaysShowing: true,
-                disabled: activeImageLocked
+                disabled: !activeImage || activeImageLocked
               },
               {
                 name: "show-tags",
-                helperText: activeImageLocked ? "" : "Show / Hide Tags",
+                helperText: !activeImage || activeImageLocked ? "" : "Show / Hide Tags",
                 alwaysShowing: true,
-                disabled: activeImageLocked
+                disabled: !activeImage || activeImageLocked
               },
               {
                 name: "create-point",
-                helperText: activeImageLocked ? "" : "Add Point",
-                disabled: activeImageLocked
+                helperText: !activeImage || activeImageLocked ? "" : "Add Point",
+                disabled: !activeImage || activeImageLocked
               },
               {
                 name: "create-box",
-                helperText: activeImageLocked ? "" : "Add Bounding Box",
-                disabled: activeImageLocked
+                helperText: !activeImage || activeImageLocked ? "" : "Add Bounding Box",
+                disabled: !activeImage || activeImageLocked
               },
               {
                 name: "create-polygon",
-                helperText: activeImageLocked ? "" : "Add Polygon",
-                disabled: activeImageLocked
+                helperText: !activeImage || activeImageLocked ? "" : "Add Polygon",
+                disabled: !activeImage || activeImageLocked
               },
               {
                 name: "create-expanding-line",
-                helperText: activeImageLocked ? "" : "Add Expanding Line",
-                disabled: activeImageLocked
+                helperText: !activeImage || activeImageLocked ? "" : "Add Expanding Line",
+                disabled: !activeImage || activeImageLocked
               },
               {
                 name: "create-keypoints",
-                helperText: activeImageLocked ? "" : "Add Keypoints (Pose)",
-                disabled: activeImageLocked
+                helperText: !activeImage || activeImageLocked ? "" : "Add Keypoints (Pose)",
+                disabled: !activeImage || activeImageLocked
               },
               state.fullImageSegmentationMode && {
                 name: "show-mask",
@@ -331,8 +297,8 @@ export const MainLayout = ({
               },
               {
                 name: "modify-allowed-area",
-                helperText: activeImageLocked ? "" : "Modify Allowed Area",
-                disabled: activeImageLocked
+                helperText: !activeImage || activeImageLocked ? "" : "Modify Allowed Area",
+                disabled: !activeImage || activeImageLocked
               },
               {
                 name: "clear-empty-regions",
@@ -375,16 +341,6 @@ export const MainLayout = ({
                 onDeleteRegion={action("DELETE_REGION", "region")}
                 onChangeRegion={action("CHANGE_REGION", "region")}
               />,
-              state.keyframes && (
-                <KeyframesSelector
-                  onChangeVideoTime={action("CHANGE_VIDEO_TIME", "newTime")}
-                  onDeleteKeyframe={action("DELETE_KEYFRAME", "time")}
-                  onChangeCurrentTime={action("CHANGE_VIDEO_TIME", "newTime")}
-                  currentTime={state.currentVideoTime}
-                  duration={state.videoDuration}
-                  keyframes={state.keyframes}
-                />
-              ),
               <HistorySidebarBox
                 history={state.history}
                 onRestoreHistory={action("RESTORE_HISTORY")}

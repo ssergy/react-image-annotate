@@ -41,8 +41,6 @@ const useStyles = makeStyles(styles)
 type Props = {
   regions: Array<Region>,
   imageSrc?: string,
-  videoSrc?: string,
-  videoTime?: number,
   keypointDefinitions?: KeypointsDefinition,
   onMouseMove?: ({ x: number, y: number }) => any,
   onMouseDown?: ({ x: number, y: number }) => any,
@@ -61,7 +59,6 @@ type Props = {
   regionTagList?: Array<string>,
   allowedArea?: { x: number, y: number, w: number, h: number },
   RegionEditLabel?: Node,
-  videoPlaying?: boolean,
   zoomOnAllowedArea?: boolean,
   fullImageSegmentationMode?: boolean,
   autoSegmentationOptions?: Object,
@@ -82,9 +79,7 @@ type Props = {
     naturalHeight: number,
     duration?: number,
   }) => any,
-  onChangeVideoTime: (number) => any,
   onRegionClassAdded: () => {},
-  onChangeVideoPlaying?: Function,
 }
 
 const getDefaultMat = (allowedArea = null, { iw, ih } = {}) => {
@@ -100,8 +95,6 @@ const getDefaultMat = (allowedArea = null, { iw, ih } = {}) => {
 export const ImageCanvas = ({
   regions,
   imageSrc,
-  videoSrc,
-  videoTime,
   realSize,
   showTags,
   onMouseMove = (p) => null,
@@ -118,7 +111,6 @@ export const ImageCanvas = ({
   showPointDistances,
   allowedArea,
   RegionEditLabel = null,
-  videoPlaying = false,
   showMask = true,
   fullImageSegmentationMode,
   autoSegmentationOptions,
@@ -133,8 +125,6 @@ export const ImageCanvas = ({
   onSelectRegion,
   onBeginMovePoint,
   onDeleteRegion,
-  onChangeVideoTime,
-  onChangeVideoPlaying,
   onRegionClassAdded,
   zoomOnAllowedArea = true,
   modifyingAllowedArea = false,
@@ -459,16 +449,11 @@ export const ImageCanvas = ({
             fullSegmentationMode={fullImageSegmentationMode}
           />
           <VideoOrImageCanvasBackground
-            videoPlaying={videoPlaying}
             imagePosition={imagePosition}
             mouseEvents={mouseEvents}
             onLoad={onVideoOrImageLoaded}
-            videoTime={videoTime}
-            videoSrc={videoSrc}
             imageSrc={imageSrc}
             useCrossOrigin={fullImageSegmentationMode}
-            onChangeVideoTime={onChangeVideoTime}
-            onChangeVideoPlaying={onChangeVideoPlaying}
           />
         </React.Fragment>
       </PreventScrollToParents>

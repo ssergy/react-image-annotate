@@ -1,14 +1,8 @@
 // @flow weak
 
-import React, { useRef, useEffect, useMemo, useState } from "react"
+import React, { useRef, useMemo, useState } from "react"
 import { styled } from "@material-ui/core/styles"
 import useEventCallback from "use-event-callback"
-import { useSettings } from "../SettingsProvider"
-
-const Video = styled("video")({
-  zIndex: 0,
-  position: "absolute",
-})
 
 const StyledImage = styled("img")({
   zIndex: 0,
@@ -44,75 +38,13 @@ const Empty = styled("div")({
 export default ({
   imagePosition,
   mouseEvents,
-  videoTime,
-  videoSrc,
   imageSrc,
   onLoad,
   useCrossOrigin = false,
-  videoPlaying,
-  onChangeVideoTime,
-  onChangeVideoPlaying,
 }) => {
-  const settings = useSettings()
-  const videoRef = useRef()
   const imageRef = useRef()
   const [error, setError] = useState()
 
-  useEffect(() => {
-    if (!videoPlaying && videoRef.current) {
-      videoRef.current.currentTime = (videoTime || 0) / 1000
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [videoTime])
-
-  useEffect(() => {
-    let renderLoopRunning = false
-    if (videoRef.current) {
-      if (videoPlaying) {
-        videoRef.current.play()
-        renderLoopRunning = true
-        if (settings.videoPlaybackSpeed) {
-          videoRef.current.playbackRate = parseFloat(
-            settings.videoPlaybackSpeed
-          )
-        }
-      } else {
-        videoRef.current.pause()
-      }
-    }
-
-    function checkForNewFrame() {
-      if (!renderLoopRunning) return
-      if (!videoRef.current) return
-      const newVideoTime = Math.floor(videoRef.current.currentTime * 1000)
-      if (videoTime !== newVideoTime) {
-        onChangeVideoTime(newVideoTime)
-      }
-      if (videoRef.current.paused) {
-        renderLoopRunning = false
-        onChangeVideoPlaying(false)
-      }
-      requestAnimationFrame(checkForNewFrame)
-    }
-    checkForNewFrame()
-
-    return () => {
-      renderLoopRunning = false
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [videoPlaying])
-
-  const onLoadedVideoMetadata = useEventCallback((event) => {
-    const videoElm = event.currentTarget
-    videoElm.currentTime = (videoTime || 0) / 1000
-    if (onLoad)
-      onLoad({
-        naturalWidth: videoElm.videoWidth,
-        naturalHeight: videoElm.videoHeight,
-        videoElm: videoElm,
-        duration: videoElm.duration,
-      })
-  })
   const onImageLoaded = useEventCallback((event) => {
     const imageElm = event.currentTarget
     if (onLoad)
@@ -125,7 +57,7 @@ export default ({
   const onImageError = useEventCallback((event) => {
     setError(
       `Could not load image\n\nMake sure your image works by visiting ${
-        imageSrc || videoSrc
+        imageSrc
       } in a web browser. If that URL works, the server hosting the URL may be not allowing you to access the image from your current domain. Adjust server settings to enable the image to be viewed.${
         !useCrossOrigin
           ? ""
@@ -151,13 +83,12 @@ export default ({
     imagePosition.bottomRight.y,
   ])
 
-  if (!videoSrc && !imageSrc)
-    return <Empty>No imageSrc or videoSrc provided. Upload some to start working</Empty>
+  if (!imageSrc)
+    return <Empty>No images provided</Empty>
 
   if (error) return <Error>{error}</Error>
 
-  return imageSrc && videoTime === undefined ? (
-    <StyledImage
+  return <StyledImage
       {...mouseEvents}
       src={imageSrc}
       ref={imageRef}
@@ -166,13 +97,4 @@ export default ({
       onError={onImageError}
       crossOrigin={useCrossOrigin ? "anonymous" : undefined}
     />
-  ) : (
-    <Video
-      {...mouseEvents}
-      ref={videoRef}
-      style={stylePosition}
-      onLoadedMetadata={onLoadedVideoMetadata}
-      src={videoSrc || imageSrc}
-    />
-  )
 }

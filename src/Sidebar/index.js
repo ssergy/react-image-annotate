@@ -8,7 +8,6 @@ import RegionSelector from "../RegionSelectorSidebarBox"
 import History from "../HistorySidebarBox"
 import DebugBox from "../DebugSidebarBox"
 import TagsSidebarBox from "../TagsSidebarBox"
-import KeyframesSelector from "../KeyframesSelectorSidebarBox"
 import type { Region } from "../ImageCanvas/region-tools.js"
 //import Shortcuts from "../Shortcuts"
 
@@ -49,13 +48,11 @@ const emptyArr = []
 export const Sidebar = ({
   debug,
   taskDescription,
-  keyframes,
   images,
   regions,
   history,
   labelImages,
   currentImage,
-  currentVideoTime,
   imageClsList,
   imageTagList,
   onChangeImage,
@@ -64,8 +61,6 @@ export const Sidebar = ({
   onChangeRegion,
   onDeleteRegion,
   onRestoreHistory,
-  onChangeVideoTime,
-  onDeleteKeyframe,
   onShortcutActionDispatched,
 }: Props) => {
   if (!regions) regions = emptyArr
@@ -94,14 +89,6 @@ export const Sidebar = ({
         onChangeRegion={onChangeRegion}
         onDeleteRegion={onDeleteRegion}
       />
-      {keyframes && (
-        <KeyframesSelector
-          currentVideoTime={currentVideoTime}
-          keyframes={keyframes}
-          onChangeVideoTime={onChangeVideoTime}
-          onDeleteKeyframe={onDeleteKeyframe}
-        />
-      )}
       <History history={history} onRestoreHistory={() => onRestoreHistory()} />
       {/*<Shortcuts onShortcutActionDispatched={onShortcutActionDispatched} />*/}
     </Container>

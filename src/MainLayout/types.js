@@ -60,7 +60,6 @@ export type Mode =
     |}
 
 export type MainLayoutStateBase = {|
-  annotationType: "video" | "image",
   mouseDownAt?: ?{ x: number, y: number },
   fullScreen?: boolean,
   settingsOpen?: boolean,
@@ -83,45 +82,15 @@ export type MainLayoutStateBase = {|
   keypointDefinitions: KeypointsDefinition,
 |}
 
-export type MainLayoutImageAnnotationState = {|
+export type MainLayoutState = {|
   ...MainLayoutStateBase,
-  annotationType: "image",
 
   selectedImage?: string,
   activeImage?: Image,
   images: Array<Image>,
   labelImages?: boolean,
-
-  // If the selectedImage corresponds to a frame of a video
-  selectedImageFrameTime?: number,
 |}
 
-export type MainLayoutVideoAnnotationState = {|
-  ...MainLayoutStateBase,
-  annotationType: "video",
-
-  videoSrc: string,
-  currentVideoTime: number,
-  videoName?: string,
-  videoPlaying: boolean,
-  videoDuration?: number,
-  activeImage?: {|
-      time: number,
-      regions: Array<Region>,
-  |},
-  keyframes: {
-    [time: number]: {|
-      time: number,
-      regions: Array<Region>,
-    |},
-  },
-  pixelSize?: { w: number, h: number },
-  realSize?: { w: number, h: number, unitName: string },
-|}
-
-export type MainLayoutState =
-  | MainLayoutImageAnnotationState
-  | MainLayoutVideoAnnotationState
 
 export type Action =
   | {| type: "@@INIT" |}

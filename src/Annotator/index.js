@@ -14,7 +14,6 @@ import SettingsProvider from "../SettingsProvider"
 import combineReducers from "./reducers/combine-reducers.js"
 import generalReducer from "./reducers/general-reducer.js"
 import imageReducer from "./reducers/image-reducer.js"
-import videoReducer from "./reducers/video-reducer.js"
 import historyHandler from "./reducers/history-handler.js"
 
 import useEventCallback from "use-event-callback"
@@ -50,10 +49,6 @@ type Props = {
   RegionEditLabel?: Node,
   onExit: (MainLayoutState) => any,
   onSaveItem: (Image) => Promise,
-  videoTime?: number,
-  videoSrc?: string,
-  keyframes?: Object,
-  videoName?: string,
   keypointDefinitions: KeypointsDefinition,
   fullImageSegmentationMode?: boolean,
   autoSegmentationOptions?:
@@ -82,13 +77,9 @@ export const Annotator = ({
   regionClsList = [],
   imageTagList = [],
   imageClsList = [],
-  keyframes = {},
   taskDescription = "",
   fullImageSegmentationMode = false,
   RegionEditLabel,
-  videoSrc,
-  videoTime = 0,
-  videoName,
   onExit,
   onSaveItem,
   onNextImage,
@@ -103,16 +94,14 @@ export const Annotator = ({
     selectedImage = (images || []).findIndex((img) => img.src === selectedImage)
     if (selectedImage === -1) selectedImage = undefined
   }
-  const annotationType = !videoSrc ? "image" : "video"
   const [state, dispatchToReducer] = useReducer(
     historyHandler(
       combineReducers(
-        annotationType === "image" ? imageReducer : videoReducer,
+        imageReducer,
         generalReducer
       )
     ),
     makeImmutable({
-      annotationType,
       showTags,
       allowedArea,
       showPointDistances,
@@ -128,23 +117,13 @@ export const Annotator = ({
       regionTagList,
       imageClsList,
       imageTagList,
-      currentVideoTime: videoTime,
       enabledTools,
       history: [],
-      videoName,
       keypointDefinitions,
-      ...(annotationType === "image"
-        ? {
-            selectedImage,
-            activeImage: selectedImage === undefined ? null : images[selectedImage],
-            images,
-            selectedImageFrameTime:
-              images && images.length > 0 ? images[0].frameTime : undefined,
-          }
-        : {
-            videoSrc,
-            keyframes,
-          }),
+      selectedImage,
+      activeImage: selectedImage === undefined ? null : images[selectedImage],
+      images,
+      selectedImageFrameTime: images && images.length > 0 ? images[0].frameTime : undefined,
     })
   )
 
@@ -158,7 +137,7 @@ export const Annotator = ({
         return onPrevImage(without(state, "history"))
       } else if (action.buttonName === "Upload") {
         return onUploadClick()
-      } else if (action.buttonName === "Preprocess") {
+      } else if (action.buttonName === "Preprocessing") {
         return onPreprocessClick()
       }
     } else if (action.type === "CONFIRM_OK" || (action.type === "HEADER_BUTTON_CLICKED" && action.buttonName === "Save")) {
@@ -187,9 +166,6 @@ export const Annotator = ({
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedImage])
-
-  if (!images && !videoSrc)
-    return 'Missing required prop "images" or "videoSrc"'
 
   return (
     <HotkeysWrapper hotKeys={hotKeys}>

@@ -5,8 +5,7 @@ import React, { createContext, useContext, useState } from "react"
 const defaultSettings = {
   showCrosshairs: false,
   showHighlightBox: true,
-  wasdMode: true,
-  videoPlaybackSpeed: '1x'
+  wasdMode: true
 }
 
 export const SettingsContext = createContext(defaultSettings)

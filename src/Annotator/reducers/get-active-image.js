@@ -1,22 +1,17 @@
 import { getIn } from "seamless-immutable"
 
 export default (state) => {
-  let currentImageIndex = null,
+  let currentImageIndex = state.selectedImage,
     pathToActiveImage,
-    activeImage
-  if (state.annotationType === "image") {
-    currentImageIndex = state.selectedImage
-    if (currentImageIndex === -1) {
-      currentImageIndex = null
-      activeImage = null
-    } else {
-      pathToActiveImage = ["images", currentImageIndex]
-      //activeImage = getIn(state, pathToActiveImage)
-    }
-  } else if (state.annotationType === "video") {
-    pathToActiveImage = ["keyframes", state.currentVideoTime || 0]
-    //activeImage = getIn(state, pathToActiveImage) || null
+    activeImage = null
+
+  if (currentImageIndex === -1) {
+    currentImageIndex = null
+    activeImage = null
+  } else {
+    pathToActiveImage = ["images", currentImageIndex]
+    activeImage = getIn(state, ["activeImage"], null)
   }
-  activeImage = getIn(state, ["activeImage"], null)
+
   return { currentImageIndex, pathToActiveImage, activeImage }
 }

@@ -122,21 +122,11 @@ export default (state: MainLayoutState, action: Action) => {
   }
 
   const setNewImage = (img: string | Object, index: number) => {
-    let { /*src, */frameTime } = typeof img === "object" ? img : { src: img }
-    let activeImage;
-    if (state.annotationType === "image") {
-      activeImage = getIn(state, ["images", index]) || null
-    } else if (state.annotationType === "video") {
-      activeImage = getIn(state, ["keyframes", frameTime || 0]) || null
-    }
+    const activeImage = getIn(state, ["images", index]) || null
     return setIn(
-      setIn(
-          setIn(state, ["selectedImage"], index),
-          ["activeImage"],
-          activeImage
-      ),
-      ["selectedImageFrameTime"],
-      frameTime
+      setIn(state, ["selectedImage"], index),
+      ["activeImage"],
+      activeImage
     )
   }
 
@@ -152,7 +142,7 @@ export default (state: MainLayoutState, action: Action) => {
       return setNewImage(action.image, action.imageIndex)
     }
     case "CHANGE_REGION": {
-      if (activeImageLocked) {
+      if (!activeImage || activeImageLocked) {
         return state
       }
       let changed =  false
@@ -178,7 +168,7 @@ export default (state: MainLayoutState, action: Action) => {
       )
     }
     case "CHANGE_IMAGE": {
-      if (activeImageLocked) {
+      if (!activeImage || activeImageLocked) {
         return state
       }
       if (!activeImage) return state
@@ -192,7 +182,7 @@ export default (state: MainLayoutState, action: Action) => {
       return state
     }
     case "SELECT_REGION": {
-      if (activeImageLocked) {
+      if (!activeImage || activeImageLocked) {
         return state
       }
       const { region } = action
@@ -206,7 +196,7 @@ export default (state: MainLayoutState, action: Action) => {
       return setIn(state, ["activeImage", "regions"], regions)
     }
     case "BEGIN_MOVE_POINT": {
-      if (activeImageLocked) {
+      if (!activeImage || activeImageLocked) {
         return state
       }
       state = closeEditors(state)
@@ -216,7 +206,7 @@ export default (state: MainLayoutState, action: Action) => {
       })
     }
     case "BEGIN_BOX_TRANSFORM": {
-      if (activeImageLocked) {
+      if (!activeImage || activeImageLocked) {
         return state
       }
       const { box, directions } = action
@@ -233,7 +223,7 @@ export default (state: MainLayoutState, action: Action) => {
       }
     }
     case "BEGIN_MOVE_POLYGON_POINT": {
-      if (activeImageLocked) {
+      if (!activeImage || activeImageLocked) {
         return state
       }
       const { polygon, pointIndex } = action
@@ -261,7 +251,7 @@ export default (state: MainLayoutState, action: Action) => {
       })
     }
     case "BEGIN_MOVE_KEYPOINT": {
-      if (activeImageLocked) {
+      if (!activeImage || activeImageLocked) {
         return state
       }
       const { region, keypointId } = action
@@ -274,7 +264,7 @@ export default (state: MainLayoutState, action: Action) => {
       })
     }
     case "ADD_POLYGON_POINT": {
-      if (activeImageLocked) {
+      if (!activeImage || activeImageLocked) {
         return state
       }
       const { polygon, point, pointIndex } = action
@@ -780,7 +770,7 @@ export default (state: MainLayoutState, action: Action) => {
       }
     }
     case "OPEN_REGION_EDITOR": {
-      if (activeImageLocked) {
+      if (!activeImage || activeImageLocked) {
         return state
       }
       //const { region } = action
@@ -811,7 +801,7 @@ export default (state: MainLayoutState, action: Action) => {
       })
     }
     case "DELETE_REGION": {
-      if (activeImageLocked) {
+      if (!activeImage || activeImageLocked) {
         return state
       }
       const regionIndex = getRegionIndex(action.region)
@@ -823,7 +813,7 @@ export default (state: MainLayoutState, action: Action) => {
       )
     }
     case "DELETE_SELECTED_REGION": {
-      if (activeImageLocked) {
+      if (!activeImage || activeImageLocked) {
         return state
       }
       return setIn(
@@ -912,7 +902,7 @@ export default (state: MainLayoutState, action: Action) => {
       }
     }
     case "SELECT_TOOL": {
-      if (activeImageLocked) {
+      if (!activeImage || activeImageLocked) {
         return state
       }
       if (action.selectedTool === "show-tags") {
@@ -957,6 +947,9 @@ export default (state: MainLayoutState, action: Action) => {
         }
       }
       // Close any open boxes
+      if (!activeImage) {
+        return state
+      }
       const regions: any = activeImage.regions
       if (regions && regions.some((r) => r.editingLabels)) {
         return setIn(
