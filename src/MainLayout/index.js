@@ -23,7 +23,7 @@ import RegionSelector from "../RegionSelectorSidebarBox"
 import ImageSelector from "../ImageSelectorSidebarBox"
 import HistorySidebarBox from "../HistorySidebarBox"
 import useEventCallback from "use-event-callback"
-import CloudUploadIcon from "@material-ui/icons/CloudUpload"
+import CloudDownloadIcon from "@material-ui/icons/CloudDownload"
 import LayersClearIcon from "@material-ui/icons/LayersClear"
 import ConfirmDialog from "../ConfirmDialog";
 import SpellcheckIcon from "@material-ui/icons/Spellcheck"
@@ -223,7 +223,7 @@ export const MainLayout = ({
               ) : null,
             ].filter(Boolean)}
             headerItems={[
-              showUploadButton ? { name: "Upload", icon: <CloudUploadIcon/> } : null,
+              showUploadButton ? { name: "Import", icon: <CloudDownloadIcon/> } : null,
               showPreprocessButton ? { name: "Preprocessing", icon: <SpellcheckIcon/> } : null,
               { name: "Prev", disabled: !currentImageIndex },
               { name: "Next", disabled: !nextImage },

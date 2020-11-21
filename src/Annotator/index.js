@@ -134,7 +134,7 @@ export const Annotator = ({
         return onNextImage(without(state, "history"))
       } else if (action.buttonName === "Prev" && onPrevImage) {
         return onPrevImage(without(state, "history"))
-      } else if (action.buttonName === "Upload") {
+      } else if (action.buttonName === "Import") {
         return onUploadClick()
       } else if (action.buttonName === "Preprocessing") {
         return onPreprocessClick(state.activeImage ? state.activeImage.id : null)
