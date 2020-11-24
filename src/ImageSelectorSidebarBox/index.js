@@ -1,7 +1,6 @@
 // @flow
 
 import React, { memo } from "react"
-import { makeStyles } from "@material-ui/core/styles"
 import SidebarBoxContainer from "../SidebarBoxContainer"
 import CollectionsIcon from "@material-ui/icons/Collections"
 import { grey } from "@material-ui/core/colors"
@@ -9,14 +8,14 @@ import List from "@material-ui/core/List"
 import ListItem from "@material-ui/core/ListItem"
 import ListItemText from "@material-ui/core/ListItemText"
 import isEqual from "lodash/isEqual"
+import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction/ListItemSecondaryAction"
+import DeleteIcon from "@material-ui/icons/Delete"
+import ListItemAvatar from "@material-ui/core/ListItemAvatar"
+import Avatar from "@material-ui/core/Avatar"
+import IconButton from "@material-ui/core/IconButton"
 
+export const ImageSelectorSidebarBox = ({ images, selectedImageIndex, onSelect, showDeleteImageButton, onDelete }) => {
 
-const useStyles = makeStyles({
-  img: { width: 40, height: 40, borderRadius: 8, marginRight: 8 },
-})
-
-export const ImageSelectorSidebarBox = ({ images, selectedImageIndex, onSelect }) => {
-  const classes = useStyles()
   return (
     <SidebarBoxContainer
       title="Images"
@@ -27,11 +26,18 @@ export const ImageSelectorSidebarBox = ({ images, selectedImageIndex, onSelect }
         <List>
           {images.map((img, i) => (
             <ListItem button onClick={() => onSelect(img, i)} selected={selectedImageIndex === i} dense key={i}>
-              <img className={classes.img} src={img.src} alt="" />
+              <ListItemAvatar>
+                <Avatar alt="" src={img.src} />
+              </ListItemAvatar>
               <ListItemText
                 primary={img.name}
                 secondary={`${(img.regions || []).length} Labels`}
               />
+              {showDeleteImageButton && <ListItemSecondaryAction>
+                  <IconButton edge="end" size="small" aria-label="delete" onClick={() => onDelete(img, i)}>
+                    <DeleteIcon fontSize="small" />
+                  </IconButton>
+              </ListItemSecondaryAction>}
             </ListItem>
           ))}
         </List>

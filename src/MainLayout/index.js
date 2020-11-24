@@ -54,6 +54,7 @@ type Props = {
   alwaysShowPrevButton?: boolean,
   showUploadButton?: boolean,
   showPreprocessButton?: boolean,
+  showDeleteImageButton?: boolean,
   onRegionClassAdded: () => {},
 }
 
@@ -64,6 +65,7 @@ export const MainLayout = ({
   alwaysShowPrevButton = false,
   showUploadButton = false,
   showPreprocessButton = false,
+  showDeleteImageButton = false,
   RegionEditLabel,
   onRegionClassAdded,
 }: Props) => {
@@ -333,6 +335,8 @@ export const MainLayout = ({
                    onSelect={action("SELECT_IMAGE", "image", "imageIndex")}
                    images={state.images}
                    selectedImageIndex={currentImageIndex}
+                   showDeleteImageButton={showDeleteImageButton}
+                   onDelete={action("DELETE_IMAGE", "image", "imageIndex")}
                  />
               ),
               <RegionSelector
@@ -365,6 +369,7 @@ export const MainLayout = ({
           />
           <ConfirmDialog
             open={Boolean(state.confirmAction)}
+            confirmAction={state.confirmAction ? state.confirmAction.type : null}
             handleCancel={() =>
               dispatch({
                 type: "CONFIRM_CANCEL"

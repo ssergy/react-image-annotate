@@ -49,12 +49,14 @@ type Props = {
   RegionEditLabel?: Node,
   onExit: (MainLayoutState) => any,
   onSaveItem: (Image) => Promise,
+  onDeleteItem: (Image) => Promise,
   keypointDefinitions: KeypointsDefinition,
   fullImageSegmentationMode?: boolean,
   autoSegmentationOptions?:
     | {| type: "simple" |}
     | {| type: "autoseg", maxClusters?: number, slicWeightFactor?: number |},
-  hotKeys?: boolean
+  hotKeys?: boolean,
+  rightSidebarDefaultExpanded?: boolean
 }
 
 export const Annotator = ({
@@ -82,14 +84,21 @@ export const Annotator = ({
   RegionEditLabel,
   onExit,
   onSaveItem,
+  onDeleteItem,
   onNextImage,
   onPrevImage,
   onUploadClick,
   onPreprocessClick,
   keypointDefinitions,
   autoSegmentationOptions = { type: "autoseg" },
-  hotKeys = false
+  hotKeys = false,
+  rightSidebarDefaultExpanded
 }: Props) => {
+
+  if (rightSidebarDefaultExpanded && typeof window.__REACT_WORKSPACE_LAYOUT_EXPANDED_STATE === 'undefined') {
+    window.__REACT_WORKSPACE_LAYOUT_EXPANDED_STATE = true
+  }
+
   if (typeof selectedImage === "string") {
     selectedImage = (images || []).findIndex((img) => img.src === selectedImage)
     if (selectedImage === -1) selectedImage = undefined
@@ -139,8 +148,12 @@ export const Annotator = ({
       } else if (action.buttonName === "Preprocessing") {
         return onPreprocessClick(state.activeImage ? state.activeImage.id : null)
       }
-    } else if (action.type === "CONFIRM_OK" || (action.type === "HEADER_BUTTON_CLICKED" && action.buttonName === "Save")) {
-      return Promise.resolve(onSaveItem(state.activeImage)).then(() => {
+    }
+    if (action.type === "CONFIRM_OK" || (action.type === "HEADER_BUTTON_CLICKED" && action.buttonName === "Save")) {
+      return Promise.resolve(action.type === "CONFIRM_OK" && state.confirmAction && state.confirmAction.type === "DELETE_IMAGE" ?
+          onDeleteItem(state.confirmAction.image) :
+          onSaveItem(state.activeImage)
+    ).then(() => {
         dispatchToReducer(action)
       }).catch(() => {
         // image was not saved, do nothing
@@ -175,6 +188,7 @@ export const Annotator = ({
           alwaysShowPrevButton={Boolean(onPrevImage)}
           showUploadButton={Boolean(onUploadClick)}
           showPreprocessButton={Boolean(onPreprocessClick)}
+          showDeleteImageButton={Boolean(onDeleteItem)}
           state={state}
           dispatch={dispatch}
           onRegionClassAdded={onRegionClassAdded}

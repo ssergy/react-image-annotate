@@ -1,7 +1,7 @@
 // @flow
 import type { MainLayoutState, Action } from "../../MainLayout/types"
 import { moveRegion } from "../../ImageCanvas/region-tools.js"
-import { getIn, setIn } from "seamless-immutable"
+import {getIn, setIn} from "seamless-immutable"
 import isEqual from "lodash/isEqual"
 import getActiveImage from "./get-active-image"
 import { saveToHistory } from "./history-handler.js"
@@ -44,7 +44,16 @@ export default (state: MainLayoutState, action: Action) => {
 
   const confirmAction = getIn(state, ["confirmAction"], null)
   if (confirmAction !== null && (action.type === "CONFIRM_CANCEL" || action.type === "CONFIRM_OK")) {
-    state = setIn(state, ["activeImage", "status"], null)
+    if (confirmAction.type === "DELETE_IMAGE") {
+      if (action.type === "CONFIRM_OK") {
+        action = {...confirmAction, type: "DELETE_IMAGE_CONFIRMED"}
+        state = setIn(state, ["confirmAction"], null)
+      } else {
+        return setIn(state, ["confirmAction"], null)
+      }
+    } else {
+      state = setIn(state, ["activeImage", "status"], null)
+    }
   }
 
   const { currentImageIndex, pathToActiveImage, activeImage } = getActiveImage(
@@ -132,6 +141,17 @@ export default (state: MainLayoutState, action: Action) => {
 
   switch (action.type) {
     case "@@INIT": {
+      return state
+    }
+    case "DELETE_IMAGE": {
+      return setIn(state, ["confirmAction"], action)
+    }
+    case "DELETE_IMAGE_CONFIRMED": {
+      state = setIn(state, ["images"], state.images.filter((i, k) => action.imageIndex !== k))
+      if (activeImage && action.imageIndex === currentImageIndex) {
+        // deleted active image
+        return setNewImage('', currentImageIndex < state.images.length ? currentImageIndex : Math.max(0, currentImageIndex - 1))
+      }
       return state
     }
     case "SELECT_IMAGE": {
@@ -482,7 +502,9 @@ export default (state: MainLayoutState, action: Action) => {
       }
     }
     case "MOUSE_DOWN": {
-      if (!activeImage) return state
+      if (!activeImage || activeImageLocked) {
+          return state
+      }
       const { x, y } = action
 
       state = setIn(state, ["mouseDownAt"], { x, y })
@@ -698,6 +720,7 @@ export default (state: MainLayoutState, action: Action) => {
               Math.abs(state.mode.original.x - x) < 0.002 ||
               Math.abs(state.mode.original.y - y) < 0.002
             ) {
+              state = setIn(state, ["history"], state.history.slice(1))
               return setIn(
                 modifyRegion(state.mode.regionId, null),
                 ["mode"],
