@@ -4,13 +4,10 @@ import type {
   MainLayoutState,
   Action,
 } from "../../MainLayout/types"
-import { setIn } from "seamless-immutable"
-import getActiveImage from "./get-active-image"
+import {getIn, setIn} from "seamless-immutable"
 
 export default (state: MainLayoutState, action: Action) => {
-  const { currentImageIndex/*, pathToActiveImage, activeImage*/ } = getActiveImage(
-    state
-  )
+  const currentImageIndex = getIn(state, ["selectedImage"], -1)
 
   switch (action.type) {
     case "IMAGE_OR_VIDEO_LOADED": {

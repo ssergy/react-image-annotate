@@ -20,6 +20,7 @@ import useEventCallback from "use-event-callback"
 import makeImmutable, { without } from "seamless-immutable"
 import {HotKeys} from "react-hotkeys";
 import {defaultKeyMap} from "../ShortcutsManager";
+import colors from "../colors";
 
 const HotkeysWrapper = ({hotKeys, children}) => {
     if (hotKeys) {
@@ -62,7 +63,7 @@ type Props = {
 export const Annotator = ({
   images,
   allowedArea,
-  selectedImage = images && images.length > 0 ? 0 : undefined,
+  selectedImage = images && images.length > 0 ? 0 : -1,
   showPointDistances,
   pointDistancePrecision,
   showTags = true,
@@ -101,7 +102,8 @@ export const Annotator = ({
 
   if (typeof selectedImage === "string") {
     selectedImage = (images || []).findIndex((img) => img.src === selectedImage)
-    if (selectedImage === -1) selectedImage = undefined
+  } else if (selectedImage === undefined) {
+    selectedImage = -1
   }
   const [state, dispatchToReducer] = useReducer(
     historyHandler(
@@ -130,7 +132,7 @@ export const Annotator = ({
       history: [],
       keypointDefinitions,
       selectedImage,
-      activeImage: selectedImage === undefined ? null : images[selectedImage],
+      activeImage: null,//selectedImage === undefined ? null : images[selectedImage],
       images,
     })
   )
@@ -170,7 +172,7 @@ export const Annotator = ({
   })
 
   useEffect(() => {
-    if (selectedImage === undefined) return
+    if (selectedImage === -1) return
     dispatchToReducer({
       type: "SELECT_IMAGE",
       imageIndex: selectedImage,
@@ -178,6 +180,30 @@ export const Annotator = ({
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedImage])
+
+  useEffect(() => {
+    //console.log('useEffect UPDATE_IMAGES')
+    dispatchToReducer({
+      type: "UPDATE_IMAGES",
+      images: images.map((item) => {
+        if (item.regions && item.regions.length > 0) {
+          item.regions.map((i, k) => {
+            if (!i.id) {
+              i.id = Math.random().toString().split(".")[1]
+            }
+            if (i.cls && !i.color) {
+              const clsIndex = regionClsList.indexOf(i.cls)
+              i.color = colors[clsIndex % colors.length]
+            } else if (!i.color) {
+              i.color = '#ff0000'
+            }
+            return i
+          })
+        }
+        return item
+      })
+    })
+  }, [images, regionClsList])
 
   return (
     <HotkeysWrapper hotKeys={hotKeys}>

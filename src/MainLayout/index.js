@@ -11,7 +11,6 @@ import classnames from "classnames"
 import { useSettings } from "../SettingsProvider"
 import SettingsDialog from "../SettingsDialog"
 import { FullScreen, useFullScreenHandle } from "react-full-screen"
-import getActiveImage from "../Annotator/reducers/get-active-image"
 import { useDispatchHotkeyHandlers } from "../ShortcutsManager"
 import { withHotKeys } from "react-hotkeys"
 import iconDictionary from "./icon-dictionary"
@@ -27,6 +26,7 @@ import CloudDownloadIcon from "@material-ui/icons/CloudDownload"
 import LayersClearIcon from "@material-ui/icons/LayersClear"
 import ConfirmDialog from "../ConfirmDialog";
 import SpellcheckIcon from "@material-ui/icons/Spellcheck"
+import {getIn} from "seamless-immutable";
 
 const emptyArr = []
 const useStyles = makeStyles(styles)
@@ -92,7 +92,8 @@ export const MainLayout = ({
     return fn
   }
 
-  const { currentImageIndex, activeImage } = getActiveImage(state)
+  const currentImageIndex = getIn(state, ["selectedImage"], -1)
+  const activeImage = currentImageIndex > -1 ? getIn(state, ["activeImage"], null) : null
 
   let nextImage
   if (currentImageIndex !== null) {
@@ -227,7 +228,7 @@ export const MainLayout = ({
             headerItems={[
               showUploadButton ? { name: "Import", icon: <CloudDownloadIcon/> } : null,
               showPreprocessButton ? { name: "Preprocessing", icon: <SpellcheckIcon/> } : null,
-              { name: "Prev", disabled: !currentImageIndex },
+              { name: "Prev", disabled: currentImageIndex < 1 },
               { name: "Next", disabled: !nextImage },
               !nextImageHasRegions && activeImage && activeImage.regions && { name: "Clone" },
               { name: "Settings" },
@@ -330,15 +331,13 @@ export const MainLayout = ({
                   expandedByDefault
                 />
               ),
-              state.images && state.images.length > 0 && (
-                 <ImageSelector
-                   onSelect={action("SELECT_IMAGE", "image", "imageIndex")}
-                   images={state.images}
-                   selectedImageIndex={currentImageIndex}
-                   showDeleteImageButton={showDeleteImageButton}
-                   onDelete={action("DELETE_IMAGE", "image", "imageIndex")}
-                 />
-              ),
+              <ImageSelector
+                 onSelect={action("SELECT_IMAGE", "image", "imageIndex")}
+                 images={state.images}
+                 selectedImageIndex={currentImageIndex}
+                 showDeleteImageButton={showDeleteImageButton}
+                 onDelete={action("DELETE_IMAGE", "image", "imageIndex")}
+              />,
               <RegionSelector
                 regions={activeImage ? activeImage.regions : emptyArr}
                 onSelectRegion={action("SELECT_REGION", "region")}

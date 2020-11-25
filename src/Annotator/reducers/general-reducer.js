@@ -3,7 +3,6 @@ import type { MainLayoutState, Action } from "../../MainLayout/types"
 import { moveRegion } from "../../ImageCanvas/region-tools.js"
 import {getIn, setIn} from "seamless-immutable"
 import isEqual from "lodash/isEqual"
-import getActiveImage from "./get-active-image"
 import { saveToHistory } from "./history-handler.js"
 import colors from "../../colors"
 import fixTwisted from "./fix-twisted"
@@ -45,26 +44,20 @@ export default (state: MainLayoutState, action: Action) => {
   const confirmAction = getIn(state, ["confirmAction"], null)
   if (confirmAction !== null && (action.type === "CONFIRM_CANCEL" || action.type === "CONFIRM_OK")) {
     if (confirmAction.type === "DELETE_IMAGE") {
-      if (action.type === "CONFIRM_OK") {
-        action = {...confirmAction, type: "DELETE_IMAGE_CONFIRMED"}
-        state = setIn(state, ["confirmAction"], null)
-      } else {
-        return setIn(state, ["confirmAction"], null)
-      }
+      return setIn(state, ["confirmAction"], null)
     } else {
       state = setIn(state, ["activeImage", "status"], null)
     }
   }
 
-  const { currentImageIndex, pathToActiveImage, activeImage } = getActiveImage(
-    state
-  )
+  const currentImageIndex = getIn(state, ["selectedImage"], -1)
+  const activeImage = currentImageIndex > -1 ? getIn(state, ["activeImage"], null) : null
 
   const activeImageLocked = activeImage && activeImage.status === 'locked'
 
   if (confirmAction !== null && activeImage && (action.type === "CONFIRM_CANCEL" || action.type === "CONFIRM_OK")) {
     if (action.type === "CONFIRM_OK") {
-      state = setIn(state, [...pathToActiveImage], activeImage)
+      state = setIn(state, ["images", currentImageIndex], activeImage)
     }
     state = setIn(state, ["confirmAction"], null)
     action = confirmAction
@@ -119,7 +112,7 @@ export default (state: MainLayoutState, action: Action) => {
   }*/
 
   const closeEditors = (state: MainLayoutState) => {
-    if (currentImageIndex === null) return state
+    if (currentImageIndex === -1) return state
     return setIn(
       state,
       ["activeImage", "regions"],
@@ -131,7 +124,7 @@ export default (state: MainLayoutState, action: Action) => {
   }
 
   const setNewImage = (img: string | Object, index: number) => {
-    const activeImage = getIn(state, ["images", index]) || null
+    const activeImage = index > -1 ? getIn(state, ["images", index], null) : null
     return setIn(
       setIn(state, ["selectedImage"], index),
       ["activeImage"],
@@ -143,16 +136,45 @@ export default (state: MainLayoutState, action: Action) => {
     case "@@INIT": {
       return state
     }
-    case "DELETE_IMAGE": {
-      return setIn(state, ["confirmAction"], action)
-    }
-    case "DELETE_IMAGE_CONFIRMED": {
-      state = setIn(state, ["images"], state.images.filter((i, k) => action.imageIndex !== k))
-      if (activeImage && action.imageIndex === currentImageIndex) {
-        // deleted active image
-        return setNewImage('', currentImageIndex < state.images.length ? currentImageIndex : Math.max(0, currentImageIndex - 1))
+    case "UPDATE_IMAGES": {
+      const oldActiveImage = activeImage ? getIn(state, ["images", currentImageIndex], null) : null
+      state = setIn(state, ["images"], action.images)
+      if (activeImage) {
+        let activeImageIndex = state.images.findIndex((i) => i.id === activeImage.id)
+        if (activeImageIndex < 0) {
+          // active image was deleted, so set new active image
+          activeImageIndex = state.images.length === 0 ?
+            -1 :
+            (currentImageIndex < state.images.length ?
+              currentImageIndex :
+              Math.min(state.images.length - 1, Math.max(0, currentImageIndex - 1)))
+          state = setNewImage(activeImageIndex !== -1 ? state.images[activeImageIndex] : null, activeImageIndex)
+        } else {
+          let status = getIn(state, ["activeImage", "status"], null)
+          if (status !== 'changed') {
+            // active image was not changed, just replace it
+            state = setNewImage(state.images[activeImageIndex], activeImageIndex)
+          } else {
+            // active image was changed inside
+            const mapRegion = (a) => [a.x, a.y, a.w, a.h, a.cls]
+            if (oldActiveImage && !isEqual((oldActiveImage.regions || []).map(mapRegion), (state.images[activeImageIndex].regions || []).map(mapRegion))) {
+              // regions changed
+              console.log('active image regions changed')
+              state = setNewImage(state.images[activeImageIndex], activeImageIndex)
+            } else if (oldActiveImage && state.images[activeImageIndex].status && (oldActiveImage.status || '') !== state.images[activeImageIndex].status) {
+              // status changed
+              console.log('active image status changed', state.images[activeImageIndex].status)
+              state = setIn(state, ["activeImage", "status"], state.images[activeImageIndex].status)
+            }
+          }
+        }
+      } else if (state.images.length > 0) {
+        state = setNewImage(state.images[0], 0)
       }
       return state
+    }
+    case "DELETE_IMAGE": {
+      return setIn(state, ["confirmAction"], action)
     }
     case "SELECT_IMAGE": {
       let status = getIn(state, ["activeImage", "status"], null)
@@ -854,7 +876,7 @@ export default (state: MainLayoutState, action: Action) => {
             return setIn(state, ["confirmAction"], action)
           }
 
-          if (currentImageIndex === null) return state
+          if (currentImageIndex === -1) return state
           if (currentImageIndex === 0) return state
           return setNewImage(
             state.images[currentImageIndex - 1],
@@ -866,7 +888,7 @@ export default (state: MainLayoutState, action: Action) => {
           if (status === "changed") {
             return setIn(state, ["confirmAction"], action)
           }
-          if (currentImageIndex === null) return state
+          if (currentImageIndex === -1) return state
           if (currentImageIndex === state.images.length - 1) return state
           return setNewImage(
             state.images[currentImageIndex + 1],
@@ -878,7 +900,7 @@ export default (state: MainLayoutState, action: Action) => {
           if (status === "changed") {
             return setIn(state, ["confirmAction"], action)
           }
-          if (currentImageIndex === null) return state
+          if (currentImageIndex === -1) return state
           if (currentImageIndex === state.images.length - 1) return state
           return setIn(
             setNewImage(
@@ -910,13 +932,16 @@ export default (state: MainLayoutState, action: Action) => {
           return state
         }
         case "save": {
+          if (!activeImage) {
+            return state
+          }
           return setIn(
             setIn(
               setIn(state, ["activeImage", "status"], null),
-              [...pathToActiveImage],
+              ["images", currentImageIndex],
               activeImage
             ),
-            [...pathToActiveImage, "status"],
+            ["images", currentImageIndex, "status"],
             null
           )
         }
