@@ -227,7 +227,7 @@ export const MainLayout = ({
             ].filter(Boolean)}
             headerItems={[
               showUploadButton ? { name: "Import", icon: <CloudDownloadIcon/> } : null,
-              showPreprocessButton ? { name: "Preprocessing", icon: <SpellcheckIcon/> } : null,
+              showPreprocessButton ? { name: "Preprocessing", icon: <SpellcheckIcon/>, disabled: currentImageIndex < 0 } : null,
               { name: "Prev", disabled: currentImageIndex < 1 },
               { name: "Next", disabled: !nextImage },
               !nextImageHasRegions && activeImage && activeImage.regions && { name: "Clone" },
