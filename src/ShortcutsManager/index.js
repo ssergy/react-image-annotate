@@ -38,12 +38,12 @@ export const defaultHotkeys = [
   {
     id: "save_and_previous_sample",
     description: "Save and go to previous sample",
-    binding: "a",
+    binding: "ArrowLeft",
   },
   {
     id: "save_and_next_sample",
     description: "Save and go to next sample",
-    binding: "d",
+    binding: "ArrowRight",
   },
   {
     id: "save_and_exit_sample",
