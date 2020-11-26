@@ -306,9 +306,9 @@ export const MainLayout = ({
               {
                 name: "clear-empty-regions",
                 alwaysShowing: true,
-                helperText: activeImageNoEmptyRegions || activeImageLocked ? "" : "Remove unclassified regions",
-                icon: <LayersClearIcon />,
-                disabled: activeImageNoEmptyRegions || activeImageLocked
+                helperText: !activeImage || activeImageLocked ? "" : "Remove unclassified regions",
+                icon: activeImageNoEmptyRegions ? <LayersClearIcon color={"disabled"} /> : <LayersClearIcon />,
+                disabled: !activeImage || activeImageLocked
               }
             ]
               .filter(Boolean)
