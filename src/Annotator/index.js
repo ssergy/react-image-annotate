@@ -21,16 +21,25 @@ import makeImmutable, { without } from "seamless-immutable"
 import {HotKeys} from "react-hotkeys";
 import {defaultKeyMap} from "../ShortcutsManager";
 import colors from "../colors";
+import {makeStyles} from "@material-ui/core";
+
+const useStyles = makeStyles({
+  fullscreen: {
+    width: "100%",
+    height: "100%"
+  },
+})
 
 const HotkeysWrapper = ({hotKeys, children}) => {
-    if (hotKeys) {
-        return <HotKeys keyMap={defaultKeyMap}>
-            {children}
-        </HotKeys>
-    }
-    return <React.Fragment>
-        {children}
-    </React.Fragment>
+  const classes = useStyles()
+  if (hotKeys) {
+    return <HotKeys className={classes.fullscreen} keyMap={defaultKeyMap}>
+      {children}
+    </HotKeys>
+  }
+  return <React.Fragment>
+    {children}
+  </React.Fragment>
 };
 
 type Props = {
