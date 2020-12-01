@@ -43,6 +43,11 @@ export default () => {
       src: "https://placekitten.com/460/320",
       name: "Image 5",
       regions: []
+    }, {
+      id: '666666',
+      src: "https://placekitten.com/448/434",
+      name: "Image 6",
+      regions: []
     }])
 
   useEffect(() => {
@@ -63,7 +68,8 @@ export default () => {
 
   return (
       <ErrorBoundary>
-          <Annotator hotKeys={true}
+        <div><h2>Example</h2></div>
+        <Annotator hotKeys={true}
                      regionTagList={[]}
                      regionClsList={["tab", "button"]}
                      rightSidebarDefaultExpanded={true}
@@ -84,7 +90,7 @@ export default () => {
                      onExit={(output) => {
                        console.log('output', output)
                      }}
-          />
+        />
       </ErrorBoundary>
   )
 }

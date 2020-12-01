@@ -9,10 +9,21 @@ import Collapse from "@material-ui/core/Collapse"
 import { grey } from "@material-ui/core/colors"
 import classnames from "classnames"
 import useEventCallback from "use-event-callback"
-//import SidebarBox from "react-material-workspace-layout/SidebarBox"
 
 const useStyles = makeStyles({
-  container: { margin: 8 },
+  container: {
+    margin: 8,
+    border: "1px solid #ccc",
+    display: 'flex',
+    flexDirection: 'column',
+    "&.less": {
+      flexGrow: 0
+    },
+    "&.more": {
+      flexGrow: 1,
+      overflow: 'hidden'
+    }
+  },
   header: {
     display: "flex",
     flexDirection: "row",
@@ -47,13 +58,18 @@ const useStyles = makeStyles({
     },
   },
   expandedContent: {
-    maxHeight: 300,
+    maxHeight: '100%',
     overflowY: "auto",
     "&.noScroll": {
       overflowY: "visible",
       overflow: "visible",
     },
   },
+  contentWrapper: {
+    "& .MuiCollapse-wrapper": {
+      maxHeight: '100%',
+    }
+  }
 })
 
 export const SidebarBoxContainer = ({
@@ -76,14 +92,8 @@ export const SidebarBoxContainer = ({
   const [expanded, changeExpanded] = useState(expandedByDefault)
   const toggleExpanded = useEventCallback(() => changeExpanded(!expanded))
 
-  /*return (
-    <SidebarBox icon={icon} title={title}>
-      {children}
-    </SidebarBox>
-  )*/
-
   return (
-    <Paper className={classes.container}>
+    <Paper className={classnames(classes.container, expanded ? " more" : "less")}>
       <div className={classes.header}>
         {icon}
         <div className={classes.title}>
@@ -98,7 +108,7 @@ export const SidebarBoxContainer = ({
           content
         ) : null
       ) : (
-        <Collapse in={expanded}>{content}</Collapse>
+        <Collapse className={classes.contentWrapper} collapsedHeight={'0px'} in={expanded}>{content}</Collapse>
       )}
     </Paper>
   )

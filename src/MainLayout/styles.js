@@ -6,7 +6,7 @@ export default {
     flexGrow: 1,
     flexDirection: "column",
     height: "100%",
-    maxHeight: "100vh",
+    maxHeight: "100%",
     backgroundColor: "#fff",
     overflow: "hidden",
     "&.fullscreen": {
@@ -17,6 +17,10 @@ export default {
       top: 0,
       bottom: 0,
     },
+    "& .expanded > div:not(.expanded)": {
+      display: 'flex',
+      flexDirection: 'column'
+    }
   },
   headerTitle: {
     fontWeight: "bold",
