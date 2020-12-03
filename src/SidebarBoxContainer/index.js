@@ -21,7 +21,8 @@ const useStyles = makeStyles({
     },
     "&.more": {
       flexGrow: 1,
-      overflow: 'hidden'
+      overflow: 'hidden',
+      minHeight: '25%'
     }
   },
   header: {
