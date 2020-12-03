@@ -10,8 +10,8 @@ import ListItemText from "@material-ui/core/ListItemText"
 import isEqual from "lodash/isEqual"
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction/ListItemSecondaryAction"
 import DeleteIcon from "@material-ui/icons/Delete"
-import ListItemAvatar from "@material-ui/core/ListItemAvatar"
-import Avatar from "@material-ui/core/Avatar"
+//import ListItemAvatar from "@material-ui/core/ListItemAvatar"
+//import Avatar from "@material-ui/core/Avatar"
 import IconButton from "@material-ui/core/IconButton"
 import {makeStyles} from "@material-ui/core";
 
@@ -40,9 +40,9 @@ export const ImageSelectorSidebarBox = ({ images, selectedImageIndex, onSelect, 
         )}
         {images.map((img, i) => (
           <ListItem button onClick={() => onSelect(img, i)} selected={selectedImageIndex === i} dense key={i}>
-            <ListItemAvatar>
+            {/*<ListItemAvatar>
               <Avatar alt="" src={img.src} />
-            </ListItemAvatar>
+            </ListItemAvatar>*/}
             <ListItemText
               primary={img.name}
               secondary={`${(img.regions || []).length} Labels`}
