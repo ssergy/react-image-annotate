@@ -20,6 +20,9 @@ export default {
     "& .expanded > div:not(.expanded)": {
       display: 'flex',
       flexDirection: 'column'
+    },
+    "& button.MuiButtonBase-root": {
+      zIndex: 999
     }
   },
   headerTitle: {
