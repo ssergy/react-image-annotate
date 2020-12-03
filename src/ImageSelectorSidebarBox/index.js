@@ -10,8 +10,8 @@ import ListItemText from "@material-ui/core/ListItemText"
 import isEqual from "lodash/isEqual"
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction/ListItemSecondaryAction"
 import DeleteIcon from "@material-ui/icons/Delete"
-//import ListItemAvatar from "@material-ui/core/ListItemAvatar"
-//import Avatar from "@material-ui/core/Avatar"
+import ListItemAvatar from "@material-ui/core/ListItemAvatar"
+import Avatar from "@material-ui/core/Avatar"
 import IconButton from "@material-ui/core/IconButton"
 import {makeStyles} from "@material-ui/core";
 
@@ -25,7 +25,7 @@ const useStyles = makeStyles({
   },
 })
 
-export const ImageSelectorSidebarBox = ({ images, selectedImageIndex, onSelect, showDeleteImageButton, onDelete }) => {
+export const ImageSelectorSidebarBox = ({ showThumbnails, images, selectedImageIndex, onSelect, showDeleteImageButton, onDelete }) => {
   const classes = useStyles()
   return (
     <SidebarBoxContainer
@@ -40,9 +40,9 @@ export const ImageSelectorSidebarBox = ({ images, selectedImageIndex, onSelect, 
         )}
         {images.map((img, i) => (
           <ListItem button onClick={() => onSelect(img, i)} selected={selectedImageIndex === i} dense key={i}>
-            {/*<ListItemAvatar>
-              <Avatar alt="" src={img.src} />
-            </ListItemAvatar>*/}
+            {showThumbnails && <ListItemAvatar>
+              <Avatar alt="" src={img.thumbnailSrc ? img.thumbnailSrc : img.src} />
+            </ListItemAvatar>}
             <ListItemText
               primary={img.name}
               secondary={`${(img.regions || []).length} Labels`}
@@ -66,4 +66,5 @@ export default memo(ImageSelectorSidebarBox, (prevProps, nextProps) =>
     prevProps.images.map(mapUsedImageProps),
     nextProps.images.map(mapUsedImageProps)
   ) && prevProps.selectedImageIndex === nextProps.selectedImageIndex
+  && prevProps.showThumbnails === nextProps.showThumbnails
 )

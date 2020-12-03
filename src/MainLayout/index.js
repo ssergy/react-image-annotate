@@ -332,6 +332,7 @@ export const MainLayout = ({
                 />
               ),
               <ImageSelector
+                 showThumbnails={settings.showThumbnails}
                  onSelect={action("SELECT_IMAGE", "image", "imageIndex")}
                  images={state.images}
                  selectedImageIndex={currentImageIndex}
