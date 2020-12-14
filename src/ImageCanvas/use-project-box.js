@@ -6,7 +6,7 @@ export default ({ layoutParams, mat }) => {
   return useEventCallback((r) => {
     const { iw, ih } = layoutParams.current
     const bbox = getEnclosingBox(r)
-    const margin = r.type === "point" ? 15 : 2
+    const margin = r.type === "point" ? 15 : 0
     const cbox = {
       x: bbox.x * iw - margin,
       y: bbox.y * ih - margin,

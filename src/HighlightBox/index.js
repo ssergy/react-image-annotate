@@ -69,10 +69,10 @@ export const HighlightBox = ({
           height: 60,
         }
       : {
-          left: pbox.x - 5,
-          top: pbox.y - 5,
-          width: pbox.w + 10,
-          height: pbox.h + 10,
+          left: pbox.x,
+          top: pbox.y,
+          width: pbox.w,
+          height: pbox.h,
         }
 
   const pathD =
@@ -80,7 +80,7 @@ export const HighlightBox = ({
       ? `M5,5 L${styleCoords.width - 5} 5L${styleCoords.width - 5} ${
           styleCoords.height - 5
         }L5 ${styleCoords.height - 5}Z`
-      : `M5,5 L${pbox.w + 5},5 L${pbox.w + 5},${pbox.h + 5} L5,${pbox.h + 5} Z`
+      : `M0,0 L${pbox.w},0 L${pbox.w},${pbox.h} L0,${pbox.h} Z`
 
   return (
     <svg
