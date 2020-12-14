@@ -202,9 +202,15 @@ export const Annotator = ({
             }
             if (i.cls === 'auto_label' && !i.color) {
               i.color = autoColor
-            } else if (i.cls && !i.color) {
+            } else if (i.cls) {
               const clsIndex = regionClsList.indexOf(i.cls)
-              i.color = colors[clsIndex % colors.length]
+              if (clsIndex === -1) {
+                //unknown region name
+                i.cls = ''
+                i.color = '#ff0000'
+              } else if (!i.color) {
+                i.color = colors[clsIndex % colors.length]
+              }
             } else if (!i.color) {
               i.color = '#ff0000'
             }
