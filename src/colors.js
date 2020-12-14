@@ -17,6 +17,8 @@ export const colors = [
   muiColors.blueGrey[500],
 ]
 
+export const autoColor = muiColors.amber[100]
+
 const transparency = 0x88000000
 
 function reverseParseColor(rrggbb) {

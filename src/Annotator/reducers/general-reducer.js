@@ -4,7 +4,7 @@ import { moveRegion } from "../../ImageCanvas/region-tools.js"
 import {getIn, setIn} from "seamless-immutable"
 import isEqual from "lodash/isEqual"
 import { saveToHistory } from "./history-handler.js"
-import colors from "../../colors"
+import colors, {autoColor} from "../../colors"
 import fixTwisted from "./fix-twisted"
 import convertExpandingLineToPolygon from "./convert-expanding-line-to-polygon"
 import clamp from "clamp"
@@ -196,7 +196,11 @@ export default (state: MainLayoutState, action: Action) => {
         state = saveToHistory(state, "Change Region Classification")
         const clsIndex = state.regionClsList.indexOf(action.region.cls)
         if (clsIndex !== -1) {
-          action.region.color = colors[clsIndex % colors.length]
+          if (state.regionClsList[clsIndex] === 'auto_label') {
+            action.region.color = autoColor
+          } else {
+            action.region.color = colors[clsIndex % colors.length]
+          }
         }
       }
       if (!isEqual(oldRegion.tags, action.region.tags)) {
@@ -603,7 +607,11 @@ export default (state: MainLayoutState, action: Action) => {
         defaultRegionCls = activeImage.regions.slice(-1)[0].cls
         const clsIndex = (state.regionClsList || []).indexOf(defaultRegionCls)
         if (clsIndex !== -1) {
-          defaultRegionColor = colors[clsIndex % colors.length]
+          if (state.regionClsList[clsIndex] === 'auto_label') {
+            defaultRegionColor = autoColor
+          } else {
+            defaultRegionColor = colors[clsIndex % colors.length]
+          }
         }
       }
 
@@ -959,11 +967,11 @@ export default (state: MainLayoutState, action: Action) => {
         return setIn(state, ["showMask"], !state.showMask)
       } else if (action.selectedTool === "clear-empty-regions") {
         const regions: any = activeImage.regions
-        if (regions && regions.some((r) => !r.cls)) {
+        if (regions && regions.some((r) => r.cls === 'auto_label')) {
           return setIn(
               setIn(state, ["activeImage", "status"], "changed"),
               ["activeImage", "regions"],
-              regions.filter((r) => r.cls)
+              regions.filter((r) => r.cls !== 'auto_label')
               )
         } else {
           return setIn(state, ["mode"], null)
@@ -971,6 +979,9 @@ export default (state: MainLayoutState, action: Action) => {
       }
       if (action.selectedTool === "modify-allowed-area" && !state.allowedArea) {
         state = setIn(state, ["allowedArea"], { x: 0, y: 0, w: 1, h: 1 })
+      }
+      if (action.selectedTool === "create-box" && state.selectedTool === action.selectedTool && action.shortcut) {
+        action.selectedTool = "select"
       }
       state = setIn(state, ["mode"], null)
       return setIn(state, ["selectedTool"], action.selectedTool)

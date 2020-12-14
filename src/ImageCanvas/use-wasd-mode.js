@@ -7,10 +7,10 @@ export default ({ getLatestMat, changeMat }) => {
     if (!wasdMode) return
     const vel = 10
     const dirs = {
-      w: [0, -vel],
-      a: [-vel, 0],
-      s: [0, vel],
-      d: [vel, 0],
+      ArrowUp: [0, -vel],
+      ArrowLeft: [-vel, 0],
+      ArrowDown: [0, vel],
+      ArrowRight: [vel, 0],
     }
     const keysDown = {}
     const keys = Object.keys(dirs)

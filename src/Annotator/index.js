@@ -20,7 +20,7 @@ import useEventCallback from "use-event-callback"
 import makeImmutable, { without } from "seamless-immutable"
 import {HotKeys} from "react-hotkeys";
 import {defaultKeyMap} from "../ShortcutsManager";
-import colors from "../colors";
+import colors, {autoColor} from "../colors";
 import {makeStyles} from "@material-ui/core";
 
 const useStyles = makeStyles({
@@ -200,7 +200,9 @@ export const Annotator = ({
             if (!i.id) {
               i.id = Math.random().toString().split(".")[1]
             }
-            if (i.cls && !i.color) {
+            if (i.cls === 'auto_label' && !i.color) {
+              i.color = autoColor
+            } else if (i.cls && !i.color) {
               const clsIndex = regionClsList.indexOf(i.cls)
               i.color = colors[clsIndex % colors.length]
             } else if (!i.color) {

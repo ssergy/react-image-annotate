@@ -19,7 +19,7 @@ export const defaultHotkeys = [
   {
     id: "create_bounding_box",
     description: "Create a bounding box",
-    binding: "b",
+    binding: "w",
   },
   {
     id: "pan_tool",
@@ -38,17 +38,17 @@ export const defaultHotkeys = [
   {
     id: "save_and_previous_sample",
     description: "Save and go to previous sample",
-    binding: "ArrowLeft",
+    binding: "a",
   },
   {
     id: "save_and_next_sample",
     description: "Save and go to next sample",
-    binding: "ArrowRight",
+    binding: "d",
   },
   {
     id: "save_and_exit_sample",
     description: "Save and exit current sample",
-    binding: "shift+s"
+    binding: "s"
   },
   {
     id: "exit_sample",
@@ -70,65 +70,76 @@ export const useDispatchHotkeyHandlers = ({ dispatch }) => {
         dispatch({
           type: "SELECT_TOOL",
           selectedTool: "select",
+          shortcut: true
         })
       },
       zoom_tool: () => {
         dispatch({
           type: "SELECT_TOOL",
           selectedTool: "zoom",
+          shortcut: true
         })
       },
       create_point: () => {
         dispatch({
           type: "SELECT_TOOL",
           selectedTool: "create-point",
+          shortcut: true
         })
       },
       create_bounding_box: () => {
         dispatch({
           type: "SELECT_TOOL",
           selectedTool: "create-box",
+          shortcut: true
         })
       },
       pan_tool: () => {
         dispatch({
           type: "SELECT_TOOL",
           selectedTool: "pan",
+          shortcut: true
         })
       },
       create_polygon: () => {
         dispatch({
           type: "SELECT_TOOL",
           selectedTool: "create-polygon",
+          shortcut: true
         })
       },
       create_pixel: () => {
         dispatch({
           type: "SELECT_TOOL",
           selectedTool: "create-pixel",
+          shortcut: true
         })
       },
       save_and_previous_sample: () => {
         dispatch({
           type: "HEADER_BUTTON_CLICKED",
           buttonName: "Prev",
+          shortcut: true
         })
       },
       save_and_next_sample: () => {
         dispatch({
           type: "HEADER_BUTTON_CLICKED",
           buttonName: "Next",
+          shortcut: true
         })
       },
       save_and_exit_sample: () => {
         dispatch({
           type: "HEADER_BUTTON_CLICKED",
           buttonName: "Save",
+          shortcut: true
         })
       },
       delete_region: () => {
         dispatch({
           type: "DELETE_SELECTED_REGION",
+          shortcut: true
         })
       },
       // TODO

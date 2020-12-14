@@ -55,6 +55,7 @@ export default () => {
       setImages(images => images.map((i, k) => {
         if (k === 0) {
           return {...i, regions: i.regions.concat([{
+              cls: 'auto_label',
               h: 0.02614379084967322,
               type: "box",
               w: 0.02758554402153013,
@@ -71,7 +72,7 @@ export default () => {
         <div><h2>Example</h2></div>
         <Annotator hotKeys={true}
                      regionTagList={[]}
-                     regionClsList={["tab", "button"]}
+                     regionClsList={["tab", "button", "auto_label"]}
                      rightSidebarDefaultExpanded={true}
                      images={images}
                      onUploadClick={() => {
