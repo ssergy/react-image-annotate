@@ -88,6 +88,9 @@ export default () => {
                        setImages(images => images.filter(i => i.id !== image.id))
                        console.log('delete image', image)
                      }}
+                     onMoveClick={(image) => {
+                       console.log('move image', image)
+                     }}
                      onExit={(output) => {
                        console.log('output', output)
                      }}

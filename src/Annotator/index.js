@@ -75,7 +75,7 @@ export const Annotator = ({
   selectedImage = images && images.length > 0 ? 0 : -1,
   showPointDistances,
   pointDistancePrecision,
-  showTags = true,
+  showTags = false,
   enabledTools = [
     "select",
     "create-point",
@@ -99,6 +99,7 @@ export const Annotator = ({
   onPrevImage,
   onUploadClick,
   onPreprocessClick,
+  onMoveClick,
   keypointDefinitions,
   autoSegmentationOptions = { type: "autoseg" },
   hotKeys = false,
@@ -158,6 +159,8 @@ export const Annotator = ({
         return onUploadClick()
       } else if (action.buttonName === "Preprocessing") {
         return onPreprocessClick(state.activeImage ? state.activeImage.id : null)
+      } else if (action.buttonName === "Move To" && state.activeImage) {
+        return onMoveClick(state.activeImage)
       }
     }
     if (action.type === "CONFIRM_OK" || (action.type === "HEADER_BUTTON_CLICKED" && action.buttonName === "Save")) {
@@ -231,6 +234,7 @@ export const Annotator = ({
           alwaysShowPrevButton={Boolean(onPrevImage)}
           showUploadButton={Boolean(onUploadClick)}
           showPreprocessButton={Boolean(onPreprocessClick)}
+          showMoveButton={Boolean(onMoveClick)}
           showDeleteImageButton={Boolean(onDeleteItem)}
           state={state}
           dispatch={dispatch}

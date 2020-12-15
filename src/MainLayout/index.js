@@ -26,6 +26,7 @@ import CloudDownloadIcon from "@material-ui/icons/CloudDownload"
 import LayersClearIcon from "@material-ui/icons/LayersClear"
 import ConfirmDialog from "../ConfirmDialog";
 import SpellcheckIcon from "@material-ui/icons/Spellcheck"
+import PresentToAllIcon from "@material-ui/icons/PresentToAll"
 import {getIn} from "seamless-immutable";
 
 const emptyArr = []
@@ -55,6 +56,7 @@ type Props = {
   showUploadButton?: boolean,
   showPreprocessButton?: boolean,
   showDeleteImageButton?: boolean,
+  showMoveButton?: boolean,
   onRegionClassAdded: () => {},
 }
 
@@ -66,6 +68,7 @@ export const MainLayout = ({
   showUploadButton = false,
   showPreprocessButton = false,
   showDeleteImageButton = false,
+  showMoveButton = false,
   RegionEditLabel,
   onRegionClassAdded,
 }: Props) => {
@@ -231,6 +234,7 @@ export const MainLayout = ({
               { name: "Prev", disabled: currentImageIndex < 1 },
               { name: "Next", disabled: !nextImage },
               !nextImageHasRegions && activeImage && activeImage.regions && { name: "Clone" },
+              showMoveButton ? { name: "Move To", icon: <PresentToAllIcon/>, disabled: !activeImage || activeImage.status === 'changed' || activeImageLocked } : null,
               { name: "Settings" },
               state.fullScreen ? { name: "Window" } : { name: "Fullscreen" },
               { name: "Save", disabled: !activeImage || activeImage.status !== 'changed' || activeImageLocked },

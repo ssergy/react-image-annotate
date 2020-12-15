@@ -17,7 +17,7 @@ export const colors = [
   muiColors.blueGrey[500],
 ]
 
-export const autoColor = muiColors.amber[100]
+export const autoColor = '#ff0000'
 
 const transparency = 0x88000000
 
