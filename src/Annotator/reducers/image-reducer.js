@@ -10,7 +10,7 @@ export default (state: MainLayoutState, action: Action) => {
   const currentImageIndex = getIn(state, ["selectedImage"], -1)
 
   switch (action.type) {
-    case "IMAGE_OR_VIDEO_LOADED": {
+    case "IMAGE_META_LOADED": {
       return setIn(
           setIn(state, ["images", currentImageIndex, "pixelSize"], {
             w: action.metadata.naturalWidth,

@@ -83,6 +83,7 @@ export const Annotator = ({
     "create-polygon",
     "create-expanding-line",
     "show-mask",
+    "rotate"
   ],
   selectedTool = "select",
   regionTagList = [],

@@ -30,7 +30,8 @@ export type Image = {
   regions?: Array<Region>,
   pixelSize?: { w: number, h: number },
   realSize?: { w: number, h: number, unitName: string },
-  status?: string
+  status?: string,
+  angle?: number
 }
 
 export type Mode =
@@ -95,11 +96,10 @@ export type Action =
   | {| type: "@@INIT" |}
   | {| type: "SELECT_IMAGE", image: Image, imageIndex: number |}
   | {|
-      type: "IMAGE_OR_VIDEO_LOADED",
+      type: "IMAGE_META_LOADED",
       metadata: {
         naturalWidth: number,
         naturalHeight: number,
-        duration?: number,
       },
     |}
   | {| type: "CHANGE_REGION", region: Region |}

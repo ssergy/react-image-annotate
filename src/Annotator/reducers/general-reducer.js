@@ -161,10 +161,17 @@ export default (state: MainLayoutState, action: Action) => {
               // regions changed
               console.log('active image regions changed')
               state = setNewImage(state.images[activeImageIndex], activeImageIndex)
-            } else if (oldActiveImage && state.images[activeImageIndex].status && (oldActiveImage.status || '') !== state.images[activeImageIndex].status) {
-              // status changed
-              console.log('active image status changed', state.images[activeImageIndex].status)
-              state = setIn(state, ["activeImage", "status"], state.images[activeImageIndex].status)
+            } else if (oldActiveImage) {
+              if (state.images[activeImageIndex].status && (oldActiveImage.status || '') !== state.images[activeImageIndex].status) {
+                // status changed
+                console.log('active image status changed', state.images[activeImageIndex].status)
+                state = setIn(state, ["activeImage", "status"], state.images[activeImageIndex].status)
+              }
+              if (oldActiveImage.angle && (state.images[activeImageIndex].angle || 0) !== oldActiveImage.angle) {
+                // angle changed
+                console.log('active image angle changed', state.images[activeImageIndex].angle)
+                state = setIn(state, ["activeImage", "angle"], (state.images[activeImageIndex].angle || 0))
+              }
             }
           }
         }
@@ -976,6 +983,14 @@ export default (state: MainLayoutState, action: Action) => {
         } else {
           return setIn(state, ["mode"], null)
         }
+      } else if (action.selectedTool === "rotate") {
+        const angle = ((activeImage.angle || 0) + 90) % 360
+        state = saveToHistory(state, "Rotate")
+        return setIn(
+          setIn(state, ["activeImage", "status"], "changed"),
+          ["activeImage", "angle"],
+          angle
+        )
       }
       if (action.selectedTool === "modify-allowed-area" && !state.allowedArea) {
         state = setIn(state, ["allowedArea"], { x: 0, y: 0, w: 1, h: 1 })

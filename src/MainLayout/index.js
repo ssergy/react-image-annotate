@@ -27,6 +27,7 @@ import LayersClearIcon from "@material-ui/icons/LayersClear"
 import ConfirmDialog from "../ConfirmDialog";
 import SpellcheckIcon from "@material-ui/icons/Spellcheck"
 import PresentToAllIcon from "@material-ui/icons/PresentToAll"
+import RotateRightIcon from "@material-ui/icons/RotateRight"
 import {getIn} from "seamless-immutable";
 
 const emptyArr = []
@@ -138,6 +139,7 @@ export const MainLayout = ({
       regions={activeImage && activeImage.regions ? activeImage.regions : []}
       realSize={activeImage ? activeImage.realSize : undefined}
       imageSrc={activeImage ? activeImage.src : null}
+      imageAngle={activeImage ? (activeImage.angle || 0) : 0}
       pointDistancePrecision={state.pointDistancePrecision}
       createWithPrimary={state.selectedTool.includes("create")}
       dragWithPrimary={state.selectedTool === "pan"}
@@ -172,7 +174,7 @@ export const MainLayout = ({
       onBeginMovePoint={action("BEGIN_MOVE_POINT", "point")}
       onImageLoaded={action("IMAGE_LOADED", "image")}
       RegionEditLabel={RegionEditLabel}
-      onImageOrVideoLoaded={action("IMAGE_OR_VIDEO_LOADED", "metadata")}
+      onImageMetaLoaded={action("IMAGE_META_LOADED", "metadata")}
       onRegionClassAdded={onRegionClassAdded}
     />
   )
@@ -305,6 +307,12 @@ export const MainLayout = ({
               {
                 name: "modify-allowed-area",
                 helperText: !activeImage || activeImageLocked ? "" : "Modify Allowed Area",
+                disabled: !activeImage || activeImageLocked
+              },
+              {
+                name: "rotate",
+                helperText: !activeImage || activeImageLocked ? "" : "Rotate",
+                icon: <RotateRightIcon />,
                 disabled: !activeImage || activeImageLocked
               },
               {

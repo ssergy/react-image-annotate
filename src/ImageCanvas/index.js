@@ -41,6 +41,7 @@ const useStyles = makeStyles(styles)
 type Props = {
   regions: Array<Region>,
   imageSrc?: string,
+  imageAngle?: number,
   keypointDefinitions?: KeypointsDefinition,
   onMouseMove?: ({ x: number, y: number }) => any,
   onMouseDown?: ({ x: number, y: number }) => any,
@@ -74,10 +75,9 @@ type Props = {
   onAddPolygonPoint: (Polygon, point: [number, number], index: number) => any,
   onSelectRegion: (Region) => any,
   onBeginMovePoint: (Point) => any,
-  onImageOrVideoLoaded: ({
+  onImageMetaLoaded: ({
     naturalWidth: number,
     naturalHeight: number,
-    duration?: number,
   }) => any,
   onRegionClassAdded: () => {},
 }
@@ -95,6 +95,7 @@ const getDefaultMat = (allowedArea = null, { iw, ih } = {}) => {
 export const ImageCanvas = ({
   regions,
   imageSrc,
+  imageAngle,
   realSize,
   showTags,
   onMouseMove = (p) => null,
@@ -114,7 +115,7 @@ export const ImageCanvas = ({
   showMask = true,
   fullImageSegmentationMode,
   autoSegmentationOptions,
-  onImageOrVideoLoaded,
+  onImageMetaLoaded,
   onChangeRegion,
   onBeginRegionEdit,
   onCloseRegionEdit,
@@ -176,10 +177,10 @@ export const ImageCanvas = ({
   const [imageDimensions, changeImageDimensions] = useState()
   const imageLoaded = Boolean(imageDimensions && imageDimensions.naturalWidth)
 
-  const onVideoOrImageLoaded = useEventCallback(
-    ({ naturalWidth, naturalHeight, duration }) => {
-      const dims = { naturalWidth, naturalHeight, duration }
-      if (onImageOrVideoLoaded) onImageOrVideoLoaded(dims)
+  const handleImageLoaded = useEventCallback(
+    ({ naturalWidth, naturalHeight }) => {
+      const dims = { naturalWidth, naturalHeight }
+      if (onImageMetaLoaded) onImageMetaLoaded(dims)
       changeImageDimensions(dims)
       // Redundant update to fix rerendering issues
       setTimeout(() => changeImageDimensions(dims), 10)
@@ -187,19 +188,20 @@ export const ImageCanvas = ({
   )
 
   const excludePattern = useExcludePattern()
+  const isVert = imageAngle === 90 || imageAngle === 270
 
   const canvas = canvasEl.current
   if (canvas && imageLoaded) {
     const { clientWidth, clientHeight } = canvas
 
     const fitScale = Math.max(
-      imageDimensions.naturalWidth / (clientWidth - 20),
-      imageDimensions.naturalHeight / (clientHeight - 20)
+      (isVert ? imageDimensions.naturalHeight : imageDimensions.naturalWidth) / (clientWidth - 20),
+      (isVert ? imageDimensions.naturalWidth : imageDimensions.naturalHeight) / (clientHeight - 20)
     )
 
     const [iw, ih] = [
-      imageDimensions.naturalWidth / fitScale,
-      imageDimensions.naturalHeight / fitScale,
+      (isVert ? imageDimensions.naturalHeight : imageDimensions.naturalWidth) / fitScale,
+      (isVert ? imageDimensions.naturalWidth : imageDimensions.naturalHeight) / fitScale,
     ]
 
     layoutParams.current = {
@@ -294,6 +296,7 @@ export const ImageCanvas = ({
   const imagePosition = {
     topLeft: mat.clone().inverse().applyToPoint(0, 0),
     bottomRight: mat.clone().inverse().applyToPoint(iw, ih),
+    angle: imageAngle
   }
 
   const highlightedRegion = useMemo(() => {
@@ -451,7 +454,7 @@ export const ImageCanvas = ({
           <VideoOrImageCanvasBackground
             imagePosition={imagePosition}
             mouseEvents={mouseEvents}
-            onLoad={onVideoOrImageLoaded}
+            onLoad={handleImageLoaded}
             imageSrc={imageSrc}
             useCrossOrigin={fullImageSegmentationMode}
           />

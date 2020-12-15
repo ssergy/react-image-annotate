@@ -67,20 +67,24 @@ export default ({
   })
 
   const stylePosition = useMemo(() => {
-    let width = imagePosition.bottomRight.x - imagePosition.topLeft.x
-    let height = imagePosition.bottomRight.y - imagePosition.topLeft.y
+    let isVert = imagePosition.angle === 90 || imagePosition.angle === 270
+    let width = isVert ? imagePosition.bottomRight.y - imagePosition.topLeft.y : imagePosition.bottomRight.x - imagePosition.topLeft.x
+    let height = isVert ? imagePosition.bottomRight.x - imagePosition.topLeft.x : imagePosition.bottomRight.y - imagePosition.topLeft.y
+    let d = isNaN(width) ? 0 : (width - height) / 2 * ((imagePosition.angle / 90) % 2)
     return {
       imageRendering: "pixelated",
-      left: imagePosition.topLeft.x,
-      top: imagePosition.topLeft.y,
+      left: -d + imagePosition.topLeft.x,
+      top: d + imagePosition.topLeft.y,
       width: isNaN(width) ? 0 : width,
       height: isNaN(height) ? 0 : height,
+      transform: imagePosition.angle ? "rotate(" + imagePosition.angle + "deg)" : ""
     }
   }, [
     imagePosition.topLeft.x,
     imagePosition.topLeft.y,
     imagePosition.bottomRight.x,
     imagePosition.bottomRight.y,
+    imagePosition.angle
   ])
 
   if (!imageSrc)
