@@ -160,7 +160,7 @@ export const Annotator = ({
       } else if (action.buttonName === "Preprocessing") {
         return onPreprocessClick(state.activeImage ? state.activeImage.id : null)
       } else if (action.buttonName === "Move To" && state.activeImage) {
-        return onMoveClick(state.activeImage)
+        return onMoveClick(state.activeImage.id)
       }
     }
     if (action.type === "CONFIRM_OK" || (action.type === "HEADER_BUTTON_CLICKED" && action.buttonName === "Save")) {
