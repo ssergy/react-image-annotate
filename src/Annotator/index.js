@@ -112,7 +112,7 @@ export const Annotator = ({
   }
 
   if (typeof selectedImage === "string") {
-    selectedImage = (images || []).findIndex((img) => img.src === selectedImage)
+    selectedImage = (images || []).findIndex((img) => img.id === selectedImage)
   } else if (selectedImage === undefined) {
     selectedImage = -1
   }
