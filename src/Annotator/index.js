@@ -18,10 +18,20 @@ import historyHandler from "./reducers/history-handler.js"
 
 import useEventCallback from "use-event-callback"
 import makeImmutable, { without } from "seamless-immutable"
-import {HotKeys} from "react-hotkeys";
+import {HotKeys, configure} from "react-hotkeys";
 import {defaultKeyMap} from "../ShortcutsManager";
 import colors, {autoColor} from "../colors";
 import {makeStyles} from "@material-ui/core";
+
+configure({
+  customKeyCodes: {
+    87: 'KeyW',
+    83: 'KeyS',
+    65: 'KeyA',
+    68: 'KeyD',
+    90: 'KeyZ'
+  }
+})
 
 const useStyles = makeStyles({
   fullscreen: {
@@ -32,6 +42,21 @@ const useStyles = makeStyles({
 
 const HotkeysWrapper = ({hotKeys, children}) => {
   const classes = useStyles()
+
+  useEffect(() => {
+    if (!hotKeys) {
+      return
+    }
+    const keyDownListener = (e) => {
+      if ((window.navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)  && (e.code === 'KeyS' || e.keyCode === 83)) {
+        e.preventDefault()
+      }
+    }
+    document.addEventListener("keydown", keyDownListener)
+    return () => window.removeEventListener("keydown", keyDownListener)
+
+  }, [hotKeys])
+
   if (hotKeys) {
     return <HotKeys className={classes.fullscreen} keyMap={defaultKeyMap}>
       {children}

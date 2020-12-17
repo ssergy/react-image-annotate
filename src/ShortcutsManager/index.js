@@ -10,7 +10,7 @@ export const defaultHotkeys = [
   {
     id: "zoom_tool",
     description: "Select the Zoom Tool",
-    binding: "z",
+    binding: "KeyZ",
   },
   {
     id: "create_point",
@@ -19,17 +19,15 @@ export const defaultHotkeys = [
   {
     id: "create_bounding_box",
     description: "Create a bounding box",
-    binding: "w",
+    binding: "KeyW",
   },
   {
     id: "pan_tool",
     description: "Select the Pan Tool",
-    binding: "m",
   },
   {
     id: "create_polygon",
     description: "Create a Polygon",
-    binding: "p",
   },
   {
     id: "create_pixel",
@@ -38,17 +36,17 @@ export const defaultHotkeys = [
   {
     id: "save_and_previous_sample",
     description: "Save and go to previous sample",
-    binding: "a",
+    binding: "KeyA",
   },
   {
     id: "save_and_next_sample",
     description: "Save and go to next sample",
-    binding: "d",
+    binding: "KeyD",
   },
   {
     id: "save_and_exit_sample",
     description: "Save and exit current sample",
-    binding: "s"
+    binding: "Control+KeyS",
   },
   {
     id: "exit_sample",
