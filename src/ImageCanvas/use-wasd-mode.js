@@ -1,10 +1,7 @@
 import { useEffect } from "react"
-import { useSettings } from "../SettingsProvider"
 
 export default ({ getLatestMat, changeMat }) => {
-  const { wasdMode } = useSettings()
   useEffect(() => {
-    if (!wasdMode) return
     const vel = 10
     const dirs = {
       ArrowUp: [0, -vel],
@@ -47,5 +44,5 @@ export default ({ getLatestMat, changeMat }) => {
       window.removeEventListener("keyup", keyUpListener)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [wasdMode])
+  }, [])
 }

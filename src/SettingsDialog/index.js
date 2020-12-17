@@ -34,11 +34,6 @@ export const SettingsDialog = ({ open, onClose }) => {
               },
               {
                 type: "boolean",
-                title: "WASD Mode",
-                name: "wasdMode",
-              },
-              {
-                type: "boolean",
                 title: "Show Thumbnails",
                 name: "showThumbnails",
               },
