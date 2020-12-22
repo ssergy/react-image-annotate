@@ -85,6 +85,12 @@ export default (state: MainLayoutState, action: Action) => {
     const [region, regionIndex] = getRegion(regionId)
     if (!region) return state
     if (obj !== null) {
+      if (obj.editingLabels && region.cls !== undefined) {
+        return setIn(
+          setIn(state, ["lastCls"], region.cls),
+          ["activeImage", "regions", regionIndex],
+          region)
+      }
       return setIn(state, ["activeImage", "regions", regionIndex], {
         ...region,
         ...obj,
@@ -138,7 +144,38 @@ export default (state: MainLayoutState, action: Action) => {
     }
     case "UPDATE_IMAGES": {
       const oldActiveImage = activeImage ? getIn(state, ["images", currentImageIndex], null) : null
-      state = setIn(state, ["images"], action.images)
+      // generate new image list - merge existing regions
+      const imagesNew = action.images.map((img) => {
+        const oldInd = state.images.findIndex(i => i.id === img.id);
+        const oldRegions = oldInd > -1 ? state.images[oldInd].regions || null : null;
+        img.regions = (img.regions || []).map((r) => {
+          const ri = oldRegions ? oldRegions.findIndex(ri => ri.x === r.x && ri.y === r.y && ri.w === r.w && ri.h === r.h && (ri.cls || '') === (r.cls || '')) : -1;
+          if (ri > -1) {
+            // region not changed
+            return oldRegions[ri];
+          }
+          if (!r.id) {
+            r.id = Math.random().toString().split(".")[1]
+          }
+          if (r.cls === 'auto_label' && !r.color) {
+            r.color = autoColor
+          } else if (r.cls) {
+            const clsIndex = state.regionClsList.indexOf(r.cls)
+            if (clsIndex === -1) {
+              //unknown region name
+              r.cls = ''
+              r.color = '#ff0000'
+            } else if (!r.color) {
+              r.color = colors[clsIndex % colors.length]
+            }
+          } else if (!r.color) {
+            r.color = '#ff0000'
+          }
+          return r;
+        });
+        return img;
+      });
+      state = setIn(state, ["images"], imagesNew)
       if (activeImage) {
         let activeImageIndex = state.images.findIndex((i) => i.id === activeImage.id)
         if (activeImageIndex < 0) {
@@ -175,9 +212,9 @@ export default (state: MainLayoutState, action: Action) => {
             }
           }
         }
-      } else if (state.images.length > 0) {
+      }/* else if (state.images.length > 0) {
         state = setNewImage(state.images[0], 0)
-      }
+      }*/
       return state
     }
     case "DELETE_IMAGE": {
@@ -208,11 +245,27 @@ export default (state: MainLayoutState, action: Action) => {
           } else {
             action.region.color = colors[clsIndex % colors.length]
           }
+          state = setIn(state, ["lastCls"], action.region.cls)
         }
       }
       if (!isEqual(oldRegion.tags, action.region.tags)) {
         changed = true
         state = saveToHistory(state, "Change Region Tags")
+      }
+      if (!changed) {
+        // region settings lock/visible are not saved, update them immediately in original array
+        const original = getIn(state, ["images", currentImageIndex, "regions"], [])
+        const originalIndex = original.findIndex(r => r.id === action.region.id);
+        if (originalIndex > -1) {
+          state = setIn(state,
+            ["images", currentImageIndex, "regions", originalIndex],
+            {
+              ...original[originalIndex],
+              locked: action.region.hasOwnProperty('locked') ? action.region.locked : false,
+              visible: action.region.hasOwnProperty('visible') ? action.region.visible : true
+            }
+          )
+        }
       }
       return setIn(
         changed ? setIn(state, ["activeImage", "status"], "changed") : state,
@@ -610,8 +663,9 @@ export default (state: MainLayoutState, action: Action) => {
       let newRegion
       let defaultRegionCls = undefined,
         defaultRegionColor = "#ff0000"
-      if (activeImage && (activeImage.regions || []).length > 0) {
-        defaultRegionCls = activeImage.regions.slice(-1)[0].cls
+
+      if (state.lastCls || (activeImage && (activeImage.regions || []).length > 0)) {
+        defaultRegionCls = state.lastCls || activeImage.regions.slice(-1)[0].cls
         const clsIndex = (state.regionClsList || []).indexOf(defaultRegionCls)
         if (clsIndex !== -1) {
           if (state.regionClsList[clsIndex] === 'auto_label') {

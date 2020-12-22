@@ -20,7 +20,6 @@ import useEventCallback from "use-event-callback"
 import makeImmutable, { without } from "seamless-immutable"
 import {HotKeys, configure} from "react-hotkeys";
 import {defaultKeyMap} from "../ShortcutsManager";
-import colors, {autoColor} from "../colors";
 import {makeStyles} from "@material-ui/core";
 
 configure({
@@ -136,11 +135,6 @@ export const Annotator = ({
     window.__REACT_WORKSPACE_LAYOUT_EXPANDED_STATE = true
   }
 
-  if (typeof selectedImage === "string") {
-    selectedImage = (images || []).findIndex((img) => img.id === selectedImage)
-  } else if (selectedImage === undefined) {
-    selectedImage = -1
-  }
   const [state, dispatchToReducer] = useReducer(
     historyHandler(
       combineReducers(
@@ -167,9 +161,9 @@ export const Annotator = ({
       enabledTools,
       history: [],
       keypointDefinitions,
-      selectedImage,
+      selectedImage: -1,
       activeImage: null,//selectedImage === undefined ? null : images[selectedImage],
-      images,
+      images: [],
     })
   )
 
@@ -210,44 +204,26 @@ export const Annotator = ({
   })
 
   useEffect(() => {
-    if (selectedImage === -1) return
+    let selectedImageIndex = -1;
+    if (typeof selectedImage === "string" && selectedImage !== "") {
+      selectedImageIndex = (state.images || []).findIndex((img) => img.id === selectedImage)
+    } else if (typeof selectedImage === "number" && state.images.length > selectedImage) {
+      selectedImageIndex = selectedImage
+    }
+    if (selectedImageIndex === -1 || state.selectedImage !== -1 || state.images.length === 0) {
+      return
+    }
     dispatchToReducer({
       type: "SELECT_IMAGE",
-      imageIndex: selectedImage,
-      image: state.images[selectedImage],
+      imageIndex: selectedImageIndex,
+      image: state.images[selectedImageIndex],
     })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedImage])
+  }, [selectedImage, state.images, state.selectedImage])
 
   useEffect(() => {
-    //console.log('useEffect UPDATE_IMAGES')
     dispatchToReducer({
       type: "UPDATE_IMAGES",
-      images: images.map((item) => {
-        if (item.regions && item.regions.length > 0) {
-          item.regions.map((i, k) => {
-            if (!i.id) {
-              i.id = Math.random().toString().split(".")[1]
-            }
-            if (i.cls === 'auto_label' && !i.color) {
-              i.color = autoColor
-            } else if (i.cls) {
-              const clsIndex = regionClsList.indexOf(i.cls)
-              if (clsIndex === -1) {
-                //unknown region name
-                i.cls = ''
-                i.color = '#ff0000'
-              } else if (!i.color) {
-                i.color = colors[clsIndex % colors.length]
-              }
-            } else if (!i.color) {
-              i.color = '#ff0000'
-            }
-            return i
-          })
-        }
-        return item
-      })
+      images: images
     })
   }, [images, regionClsList])
 

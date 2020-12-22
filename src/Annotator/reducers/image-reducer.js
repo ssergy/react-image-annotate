@@ -4,18 +4,14 @@ import type {
   MainLayoutState,
   Action,
 } from "../../MainLayout/types"
-import {getIn, setIn} from "seamless-immutable"
+import {setIn} from "seamless-immutable"
 
 export default (state: MainLayoutState, action: Action) => {
-  const currentImageIndex = getIn(state, ["selectedImage"], -1)
 
   switch (action.type) {
     case "IMAGE_META_LOADED": {
       return setIn(
-          setIn(state, ["images", currentImageIndex, "pixelSize"], {
-            w: action.metadata.naturalWidth,
-            h: action.metadata.naturalHeight,
-          }),
+          state,
           ["activeImage", "pixelSize"], {
             w: action.metadata.naturalWidth,
             h: action.metadata.naturalHeight,

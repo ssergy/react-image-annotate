@@ -80,6 +80,7 @@ export type MainLayoutStateBase = {|
   enabledTools: Array<string>,
   history: Array<{ time: Date, state: MainLayoutState, name: string }>,
   keypointDefinitions: KeypointsDefinition,
+  lastCls?: string
 |}
 
 export type MainLayoutState = {|
