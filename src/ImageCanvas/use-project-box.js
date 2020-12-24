@@ -1,9 +1,9 @@
 // @flow weak
-import useEventCallback from "use-event-callback"
+import {useCallback} from "react"
 import { getEnclosingBox } from "./region-tools.js"
 
 export default ({ layoutParams, mat }) => {
-  return useEventCallback((r) => {
+  return useCallback((r) => {
     const { iw, ih } = layoutParams.current
     const bbox = getEnclosingBox(r)
     const margin = r.type === "point" ? 15 : 0
@@ -19,5 +19,6 @@ export default ({ layoutParams, mat }) => {
       h: cbox.h / mat.d,
     }
     return pbox
-  })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [layoutParams.current.iw, layoutParams.current.ih, mat.a, mat.b, mat.c, mat.d, mat.e, mat.f])
 }
