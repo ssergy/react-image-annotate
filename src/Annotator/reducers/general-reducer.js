@@ -1028,11 +1028,11 @@ export default (state: MainLayoutState, action: Action) => {
         return setIn(state, ["showMask"], !state.showMask)
       } else if (action.selectedTool === "clear-empty-regions") {
         const regions: any = activeImage.regions
-        if (regions && regions.some((r) => r.cls === 'auto_label')) {
+        if (regions && regions.some((r) => !r.cls || r.cls === 'auto_label')) {
           return setIn(
               setIn(state, ["activeImage", "status"], "changed"),
               ["activeImage", "regions"],
-              regions.filter((r) => r.cls !== 'auto_label')
+              regions.filter((r) => r.cls && r.cls !== 'auto_label')
               )
         } else {
           return setIn(state, ["mode"], null)
