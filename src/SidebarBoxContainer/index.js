@@ -22,8 +22,11 @@ const useStyles = makeStyles({
     "&.more": {
       flexGrow: 1,
       overflow: 'hidden',
-      minHeight: '25%'
-    }
+      minHeight: '25%',
+      "&.noScroll": {
+        minHeight: '35%',
+      }
+    },
   },
   header: {
     display: "flex",
@@ -64,6 +67,7 @@ const useStyles = makeStyles({
     "&.noScroll": {
       overflowY: "visible",
       overflow: "visible",
+      height: "calc(100% - 46px)"
     },
   },
   contentWrapper: {
@@ -94,7 +98,7 @@ export const SidebarBoxContainer = ({
   const toggleExpanded = useEventCallback(() => changeExpanded(!expanded))
 
   return (
-    <Paper className={classnames(classes.container, expanded ? " more" : "less")}>
+    <Paper className={classnames(classes.container, noScroll && "noScroll", expanded ? " more" : "less")}>
       <div className={classes.header}>
         {icon}
         <div className={classes.title}>
