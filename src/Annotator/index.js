@@ -84,6 +84,7 @@ type Props = {
   onExit: (MainLayoutState) => any,
   onSaveItem: (Image) => Promise,
   onDeleteItem: (Image) => Promise,
+  onSelectedItem: (number) => any,
   keypointDefinitions: KeypointsDefinition,
   fullImageSegmentationMode?: boolean,
   autoSegmentationOptions?:
@@ -120,6 +121,7 @@ export const Annotator = ({
   onExit,
   onSaveItem,
   onDeleteItem,
+  onSelectedItem,
   onNextImage,
   onPrevImage,
   onUploadClick,
@@ -226,6 +228,12 @@ export const Annotator = ({
       images: images
     })
   }, [images, regionClsList])
+
+  useEffect(() => {
+    if (onSelectedItem) {
+      onSelectedItem(state.selectedImage)
+    }
+  }, [state.selectedImage, onSelectedItem])
 
   return (
     <HotkeysWrapper hotKeys={hotKeys}>

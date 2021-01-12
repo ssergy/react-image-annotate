@@ -47,12 +47,13 @@ export const ImageSelectorSidebarBox = ({ showThumbnails, images, selectedImageI
   }, [showThumbnails, images, selectedImageIndex, onSelect, showDeleteImageButton, onDelete])
 
   useEffect(() => {
-    if (listRef && listRef.current) {
-      const tm = setTimeout(() => {
-        listRef.current.scrollToItem(selectedImageIndex, 'start')
-      }, 50)
-      return () => clearTimeout(tm)
+    if (!listRef || !listRef.current) {
+      return
     }
+    const tm = setTimeout(() => {
+      listRef.current.scrollToItem(selectedImageIndex, 'smart')
+    }, 50)
+    return () => clearTimeout(tm)
   }, [selectedImageIndex])
 
   return (

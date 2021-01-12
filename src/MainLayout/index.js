@@ -227,7 +227,7 @@ export const MainLayout = ({
             iconDictionary={iconDictionary}
             headerLeftSide={[
               activeImage ? (
-                <div key="image" className={classes.headerTitle}>{activeImage.name}{activeImageLocked && <span className={classes.headerStatus}>(locked)</span>}</div>
+                <div key="image" className={classes.headerTitle}>[{currentImageIndex + 1} of {state.images.length}] {activeImage.name}{activeImageLocked && <span className={classes.headerStatus}>(locked)</span>}</div>
               ) : null,
             ].filter(Boolean)}
             headerItems={[
