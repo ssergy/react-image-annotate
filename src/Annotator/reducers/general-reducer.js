@@ -209,6 +209,9 @@ export default (state: MainLayoutState, action: Action) => {
                 console.log('active image angle changed', state.images[activeImageIndex].angle)
                 state = setIn(state, ["activeImage", "angle"], (state.images[activeImageIndex].angle || 0))
               }
+              if (activeImageIndex !== currentImageIndex) {
+                state = setIn(state, ["selectedImage"], activeImageIndex)
+              }
             }
           }
         }
