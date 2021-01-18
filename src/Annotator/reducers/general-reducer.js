@@ -143,12 +143,15 @@ export default (state: MainLayoutState, action: Action) => {
       return state
     }
     case "UPDATE_IMAGES": {
+      state = setIn(state, ["regionClsList"], action.cls)
       const oldActiveImage = activeImage ? getIn(state, ["images", currentImageIndex], null) : null
       // generate new image list - merge existing regions
-      const imagesNew = action.images.map((img) => {
+      const imagesNew = action.images.map((item) => {
+        const img = {...item};
         const oldInd = state.images.findIndex(i => i.id === img.id);
         const oldRegions = oldInd > -1 ? state.images[oldInd].regions || null : null;
-        img.regions = (img.regions || []).map((r) => {
+        img.regions = (img.regions || []).map((ritem) => {
+          const r = {...ritem};
           const ri = oldRegions ? oldRegions.findIndex(ri => ri.x === r.x && ri.y === r.y && ri.w === r.w && ri.h === r.h && (ri.cls || '') === (r.cls || '')) : -1;
           if (ri > -1) {
             // region not changed

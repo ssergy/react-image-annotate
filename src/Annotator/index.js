@@ -225,7 +225,8 @@ export const Annotator = ({
   useEffect(() => {
     dispatchToReducer({
       type: "UPDATE_IMAGES",
-      images: images
+      images: images,
+      cls: regionClsList
     })
   }, [images, regionClsList])
 
