@@ -37,6 +37,13 @@ export const SettingsDialog = ({ open, onClose }) => {
                 title: "Show Thumbnails",
                 name: "showThumbnails",
               },
+              {
+                type: "dropdown",
+                title: "Label box position",
+                name: "labelBoxPosition",
+                defaultValue: "left",
+                choices: ["left", "right"],
+              },
             ],
           }}
         />

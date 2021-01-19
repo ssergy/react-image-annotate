@@ -35,6 +35,7 @@ import VideoOrImageCanvasBackground from "../VideoOrImageCanvasBackground"
 import useEventCallback from "use-event-callback"
 import RegionShapes from "../RegionShapes"
 import useWasdMode from "./use-wasd-mode"
+import classnames from "classnames"
 
 const useStyles = makeStyles(styles)
 
@@ -64,6 +65,7 @@ type Props = {
   fullImageSegmentationMode?: boolean,
   autoSegmentationOptions?: Object,
   modifyingAllowedArea?: boolean,
+  labelBoxPosition?: string,
 
   onChangeRegion: (Region) => any,
   onBeginRegionEdit: (Region) => any,
@@ -115,6 +117,7 @@ export const ImageCanvas = ({
   showMask = true,
   fullImageSegmentationMode,
   autoSegmentationOptions,
+  labelBoxPosition = 'left',
   onImageMetaLoaded,
   onChangeRegion,
   onBeginRegionEdit,
@@ -386,7 +389,7 @@ export const ImageCanvas = ({
         </PreventScrollToParents>
       )}
       {!showTags && highlightedRegion && (
-        <div key="topLeftTag" className={classes.fixedRegionLabel}>
+        <div key="topLeftTag" className={classnames(classes.fixedRegionLabel, {right: labelBoxPosition === "right"})}>
           <RegionLabel
             disableClose
             allowedClasses={regionClsList}

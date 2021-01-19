@@ -20,6 +20,10 @@ export default {
     left: 10,
     opacity: 0.5,
     transition: "opacity 500ms",
+    "&.right": {
+      left: "auto",
+      right: 10
+    },
     "&:hover": {
       opacity: 1,
     },
