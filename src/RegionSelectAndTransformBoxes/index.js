@@ -68,8 +68,8 @@ export const RegionSelectAndTransformBox = memo(
             !dragWithPrimary &&
             !zoomWithPrimary &&
             !r.locked &&
-            r.highlighted &&
-            mat.a < 1.2 &&
+            r.highlighted/* &&
+            mat.a < 1.2*/ &&
             [
               [0, 0],
               [0.5, 0],
