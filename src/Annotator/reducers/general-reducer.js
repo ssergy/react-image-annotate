@@ -268,7 +268,7 @@ export default (state: MainLayoutState, action: Action) => {
             {
               ...original[originalIndex],
               locked: action.region.hasOwnProperty('locked') ? action.region.locked : false,
-              visible: action.region.hasOwnProperty('visible') ? action.region.visible : true
+              visible: action.region.hasOwnProperty('visible') ? action.region.visible : undefined
             }
           )
         }
@@ -707,6 +707,7 @@ export default (state: MainLayoutState, action: Action) => {
             h: 0,
             highlighted: true,
             editingLabels: false,
+            visible: true,
             color: defaultRegionColor,
             cls: defaultRegionCls,
             id: getRandomId(),

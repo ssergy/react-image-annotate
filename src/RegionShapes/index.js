@@ -165,9 +165,9 @@ const RegionComponents = {
 }
 
 export const WrappedRegionList = memo(
-  ({ regions, keypointDefinitions, iw, ih, fullSegmentationMode }) => {
+  ({ regions, keypointDefinitions, iw, ih, fullSegmentationMode, showDocRegion }) => {
     return regions
-      .filter((r) => r.visible !== false)
+      .filter((r) => r.visible || (r.visible === undefined && (r.cls !== 'doc_region' || showDocRegion)))
       .map((r) => {
         const Component = RegionComponents[r.type]
         return (
@@ -182,7 +182,7 @@ export const WrappedRegionList = memo(
         )
       })
   },
-  (n, p) => n.regions === p.regions && n.iw === p.iw && n.ih === p.ih
+  (n, p) => n.regions === p.regions && n.iw === p.iw && n.ih === p.ih && n.showDocRegion === p.showDocRegion
 )
 
 export const RegionShapes = ({
@@ -191,6 +191,7 @@ export const RegionShapes = ({
   regions = [],
   keypointDefinitions,
   fullSegmentationMode,
+  showDocRegion
 }) => {
   const iw = imagePosition.bottomRight.x - imagePosition.topLeft.x
   const ih = imagePosition.bottomRight.y - imagePosition.topLeft.y
@@ -216,6 +217,7 @@ export const RegionShapes = ({
         ih={ih}
         keypointDefinitions={keypointDefinitions}
         fullSegmentationMode={fullSegmentationMode}
+        showDocRegion={showDocRegion}
       />
     </svg>
   )

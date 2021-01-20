@@ -66,7 +66,8 @@ type Props = {
   autoSegmentationOptions?: Object,
   modifyingAllowedArea?: boolean,
   labelBoxPosition?: string,
-
+  showDocRegion?: boolean,
+  transformGrabberColor?: string,
   onChangeRegion: (Region) => any,
   onBeginRegionEdit: (Region) => any,
   onCloseRegionEdit: (Region) => any,
@@ -118,6 +119,8 @@ export const ImageCanvas = ({
   fullImageSegmentationMode,
   autoSegmentationOptions,
   labelBoxPosition = 'left',
+  showDocRegion = false,
+  transformGrabberColor = 'white',
   onImageMetaLoaded,
   onChangeRegion,
   onBeginRegionEdit,
@@ -367,6 +370,8 @@ export const ImageCanvas = ({
           onBeginMoveKeypoint={onBeginMoveKeypoint}
           onAddPolygonPoint={onAddPolygonPoint}
           showHighlightBox={showHighlightBox}
+          showDocRegion={showDocRegion}
+          transformGrabberColor={transformGrabberColor}
         />
       )}
       {imageLoaded && showTags && !dragging && (
@@ -385,6 +390,7 @@ export const ImageCanvas = ({
             imageSrc={imageSrc}
             RegionEditLabel={RegionEditLabel}
             onRegionClassAdded={onRegionClassAdded}
+            showDocRegion={showDocRegion}
           />
         </PreventScrollToParents>
       )}
@@ -453,6 +459,7 @@ export const ImageCanvas = ({
             imagePosition={imagePosition}
             regions={regions}
             fullSegmentationMode={fullImageSegmentationMode}
+            showDocRegion={showDocRegion}
           />
           <VideoOrImageCanvasBackground
             imagePosition={imagePosition}

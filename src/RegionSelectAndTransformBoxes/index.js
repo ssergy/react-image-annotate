@@ -8,7 +8,8 @@ const TransformGrabber = styled("div")({
   width: 8,
   height: 8,
   zIndex: 2,
-  border: "2px solid #FFF",
+  borderWidth: 2,
+  borderStyle: "solid",
   position: "absolute",
 })
 
@@ -24,7 +25,8 @@ const arePropsEqual = (prev, next) => {
     prev.dragWithPrimary === next.dragWithPrimary &&
     prev.createWithPrimary === next.createWithPrimary &&
     prev.zoomWithPrimary === next.zoomWithPrimary &&
-    prev.mat === next.mat
+    prev.mat === next.mat &&
+    prev.transformGrabberColor === next.transformGrabberColor
   )
 }
 
@@ -46,6 +48,7 @@ export const RegionSelectAndTransformBox = memo(
     onBeginMoveKeypoint,
     onAddPolygonPoint,
     showHighlightBox,
+    transformGrabberColor
   }) => {
     const pbox = projectRegionBox(r)
     const { iw, ih } = layoutParams.current
@@ -94,6 +97,7 @@ export const RegionSelectAndTransformBox = memo(
                   top: pbox.y - 4 - 2 + pbox.h * py,
                   cursor: boxCursorMap[py * 2][px * 2],
                   borderRadius: px === 0.5 && py === 0.5 ? 4 : undefined,
+                  borderColor: transformGrabberColor
                 }}
               />
             ))}
@@ -211,13 +215,13 @@ export const RegionSelectAndTransformBox = memo(
 export const RegionSelectAndTransformBoxes = memo(
   (props) => {
     return props.regions
-      .filter((r) => r.visible || r.visible === undefined)
+      .filter((r) => r.visible || (r.visible === undefined && (r.cls !== 'doc_region' || props.showDocRegion)))
       .filter((r) => !r.locked)
       .map((r, i) => {
         return <RegionSelectAndTransformBox key={r.id} {...props} region={r} />
       })
   },
-  (n, p) => n.regions === p.regions && n.mat === p.mat
+  (n, p) => n.regions === p.regions && n.mat === p.mat && n.showDocRegion === p.showDocRegion && n.transformGrabberColor === p.transformGrabberColor
 )
 
 export default RegionSelectAndTransformBoxes

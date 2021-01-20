@@ -27,11 +27,12 @@ export const RegionTags = ({
   imageSrc,
   RegionEditLabel,
   onRegionClassAdded,
+  showDocRegion
 }) => {
   const RegionLabel =
     RegionEditLabel != null ? RegionEditLabel : DefaultRegionLabel
   return regions
-    .filter((r) => r.visible || r.visible === undefined)
+    .filter((r) => r.visible || (r.visible === undefined && (r.cls !== 'doc_region' || showDocRegion)))
     .map((region) => {
       const pbox = projectRegionBox(region)
       //const { iw, ih } = layoutParams.current

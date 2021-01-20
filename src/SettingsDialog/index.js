@@ -38,11 +38,23 @@ export const SettingsDialog = ({ open, onClose }) => {
                 name: "showThumbnails",
               },
               {
+                type: "boolean",
+                title: "Show document region",
+                name: "showDocRegion",
+              },
+              {
                 type: "dropdown",
                 title: "Label box position",
                 name: "labelBoxPosition",
                 defaultValue: "left",
                 choices: ["left", "right"],
+              },
+              {
+                type: "dropdown",
+                title: "Label transform grabber color",
+                name: "transformGrabberColor",
+                defaultValue: "white",
+                choices: ["white", "green", "black"],
               },
             ],
           }}

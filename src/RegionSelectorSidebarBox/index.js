@@ -109,6 +109,7 @@ const Row = ({
   color,
   cls,
   index,
+  showDocRegion
 }) => {
   return (
     <RowLayout
@@ -133,7 +134,7 @@ const Row = ({
         )
       }
       visible={
-        r.visible || r.visible === undefined ? (
+        r.visible || (r.visible === undefined && (r.cls !== 'doc_region' || showDocRegion)) ? (
           <VisibleIcon
             onClick={() => onChangeRegion({ ...r, visible: false })}
             className="icon2"
@@ -158,7 +159,8 @@ const MemoRow = memo(
     prevProps.id === nextProps.id &&
     prevProps.index === nextProps.index &&
     prevProps.cls === nextProps.cls &&
-    prevProps.color === nextProps.color
+    prevProps.color === nextProps.color &&
+    prevProps.showDocRegion === nextProps.showDocRegion
 )
 
 const emptyArr = []
@@ -168,6 +170,7 @@ export const RegionSelectorSidebarBox = ({
   onDeleteRegion,
   onChangeRegion,
   onSelectRegion,
+  showDocRegion
 }) => {
   const classes = useStyles()
   return (
@@ -186,6 +189,7 @@ export const RegionSelectorSidebarBox = ({
             {...r}
             region={r}
             index={i}
+            showDocRegion={showDocRegion}
             onSelectRegion={onSelectRegion}
             onDeleteRegion={onDeleteRegion}
             onChangeRegion={onChangeRegion}
@@ -208,5 +212,5 @@ export default memo(RegionSelectorSidebarBox, (prevProps, nextProps) =>
   isEqual(
     (prevProps.regions || emptyArr).map(mapUsedRegionProperties),
     (nextProps.regions || emptyArr).map(mapUsedRegionProperties)
-  )
+  ) && prevProps.showDocRegion === nextProps.showDocRegion
 )

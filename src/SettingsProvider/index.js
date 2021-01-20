@@ -6,7 +6,9 @@ const defaultSettings = {
   showCrosshairs: false,
   showHighlightBox: true,
   showThumbnails: false,
-  labelBoxPosition: 'left'
+  showDocRegion: false,
+  labelBoxPosition: 'left',
+  transformGrabberColor: 'white'
 }
 
 export const SettingsContext = createContext(defaultSettings)

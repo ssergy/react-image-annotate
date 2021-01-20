@@ -356,6 +356,7 @@ export const MainLayout = ({
                 onSelectRegion={action("SELECT_REGION", "region")}
                 onDeleteRegion={action("DELETE_REGION", "region")}
                 onChangeRegion={action("CHANGE_REGION", "region")}
+                showDocRegion={settings.showDocRegion}
               />,
               <HistorySidebarBox
                 history={state.history}
