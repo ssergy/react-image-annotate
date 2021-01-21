@@ -6,59 +6,14 @@ import DialogTitle from "@material-ui/core/DialogTitle"
 import DialogContent from "@material-ui/core/DialogContent"
 import DialogActions from "@material-ui/core/DialogActions"
 import Button from "@material-ui/core/Button"
-import Survey from "material-survey/components/Survey"
-import { useSettings } from "../SettingsProvider"
+import SettingsForm from "./settings-form";
 
 export const SettingsDialog = ({ open, onClose }) => {
-  const settings = useSettings()
   return (
     <Dialog open={open || false} onClose={onClose}>
       <DialogTitle>Settings</DialogTitle>
       <DialogContent style={{ minWidth: 400 }}>
-        <Survey
-          variant="flat"
-          noActions
-          defaultAnswers={settings}
-          onQuestionChange={(q, a, answers) => settings.changeSetting(q, a)}
-          form={{
-            questions: [
-              {
-                type: "boolean",
-                title: "Show Crosshairs",
-                name: "showCrosshairs",
-              },
-              {
-                type: "boolean",
-                title: "Show Highlight Box",
-                name: "showHighlightBox",
-              },
-              {
-                type: "boolean",
-                title: "Show Thumbnails",
-                name: "showThumbnails",
-              },
-              {
-                type: "boolean",
-                title: "Show document region",
-                name: "showDocRegion",
-              },
-              {
-                type: "dropdown",
-                title: "Label box position",
-                name: "labelBoxPosition",
-                defaultValue: "left",
-                choices: ["left", "right"],
-              },
-              {
-                type: "dropdown",
-                title: "Label transform grabber color",
-                name: "transformGrabberColor",
-                defaultValue: "white",
-                choices: ["white", "green", "black"],
-              },
-            ],
-          }}
-        />
+        <SettingsForm/>
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Close</Button>
