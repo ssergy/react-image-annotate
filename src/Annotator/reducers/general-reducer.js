@@ -129,7 +129,7 @@ export default (state: MainLayoutState, action: Action) => {
     )
   }
 
-  const setNewImage = (img: string | Object, index: number) => {
+  const setNewImage = (index: number) => {
     const activeImage = index > -1 ? getIn(state, ["images", index], null) : null
     return setIn(
       setIn(state, ["selectedImage"], index),
@@ -188,19 +188,19 @@ export default (state: MainLayoutState, action: Action) => {
             (currentImageIndex < state.images.length ?
               currentImageIndex :
               Math.min(state.images.length - 1, Math.max(0, currentImageIndex - 1)))
-          state = setNewImage(activeImageIndex !== -1 ? state.images[activeImageIndex] : null, activeImageIndex)
+          state = setNewImage(activeImageIndex)
         } else {
           let status = getIn(state, ["activeImage", "status"], null)
           if (status !== 'changed') {
             // active image was not changed, just replace it
-            state = setNewImage(state.images[activeImageIndex], activeImageIndex)
+            state = setNewImage(activeImageIndex)
           } else {
             // active image was changed inside
             const mapRegion = (a) => [a.x, a.y, a.w, a.h, a.cls]
             if (oldActiveImage && !isEqual((oldActiveImage.regions || []).map(mapRegion), (state.images[activeImageIndex].regions || []).map(mapRegion))) {
               // regions changed
               console.log('active image regions changed')
-              state = setNewImage(state.images[activeImageIndex], activeImageIndex)
+              state = setNewImage(activeImageIndex)
             } else if (oldActiveImage) {
               if (state.images[activeImageIndex].status && (oldActiveImage.status || '') !== state.images[activeImageIndex].status) {
                 // status changed
@@ -231,7 +231,7 @@ export default (state: MainLayoutState, action: Action) => {
       if (status === "changed") {
         return setIn(state, ["confirmAction"], action)
       }
-      return setNewImage(action.image, action.imageIndex)
+      return setNewImage(action.imageIndex)
     }
     case "CHANGE_REGION": {
       if (!activeImage || activeImageLocked) {
@@ -955,7 +955,6 @@ export default (state: MainLayoutState, action: Action) => {
           if (currentImageIndex === -1) return state
           if (currentImageIndex === 0) return state
           return setNewImage(
-            state.images[currentImageIndex - 1],
             currentImageIndex - 1
           )
         }
@@ -967,7 +966,6 @@ export default (state: MainLayoutState, action: Action) => {
           if (currentImageIndex === -1) return state
           if (currentImageIndex === state.images.length - 1) return state
           return setNewImage(
-            state.images[currentImageIndex + 1],
             currentImageIndex + 1
           )
         }
@@ -980,7 +978,6 @@ export default (state: MainLayoutState, action: Action) => {
           if (currentImageIndex === state.images.length - 1) return state
           return setIn(
             setNewImage(
-              state.images[currentImageIndex + 1],
               currentImageIndex + 1
             ),
             ["images", currentImageIndex + 1, "regions"],
