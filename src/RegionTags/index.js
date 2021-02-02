@@ -18,7 +18,6 @@ export const RegionTags = ({
   projectRegionBox,
   mouseEvents,
   regionClsList,
-  regionTagList,
   onBeginRegionEdit,
   onChangeRegion,
   onCloseRegionEdit,
@@ -26,7 +25,6 @@ export const RegionTags = ({
   layoutParams,
   imageSrc,
   RegionEditLabel,
-  onRegionClassAdded,
   showDocRegion
 }) => {
   const RegionLabel =
@@ -39,7 +37,7 @@ export const RegionTags = ({
       let margin = 8
       if (region.highlighted && region.type === "box") margin += 6
       const labelBoxHeight =
-        region.editingLabels && !region.locked ? 170 : region.tags ? 60 : 50
+        region.editingLabels && !region.locked ? 170 : 50
       const displayOnTop = pbox.y > labelBoxHeight
 
       const coords = displayOnTop
@@ -109,7 +107,6 @@ export const RegionTags = ({
           >
             <RegionLabel
               allowedClasses={regionClsList}
-              allowedTags={regionTagList}
               onOpen={onBeginRegionEdit}
               onChange={onChangeRegion}
               onClose={onCloseRegionEdit}
@@ -118,7 +115,6 @@ export const RegionTags = ({
               region={region}
               regions={regions}
               imageSrc={imageSrc}
-              onRegionClassAdded={onRegionClassAdded}
             />
           </div>
         </div>

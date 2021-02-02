@@ -12,11 +12,7 @@ import { Matrix } from "transformation-matrix-js"
 import Crosshairs from "../Crosshairs"
 import type {
   Region,
-  Point,
-  Polygon,
-  Box,
-  Keypoints,
-  KeypointsDefinition,
+  Box
 } from "./region-tools.js"
 import { makeStyles } from "@material-ui/core/styles"
 import styles from "./styles"
@@ -26,10 +22,8 @@ import useMouse from "./use-mouse"
 import useProjectRegionBox from "./use-project-box"
 import useExcludePattern from "../hooks/use-exclude-pattern"
 import { useRafState } from "react-use"
-import PointDistances from "../PointDistances"
 import RegionTags from "../RegionTags"
 import RegionLabel from "../RegionLabel"
-import ImageMask from "../ImageMask"
 import RegionSelectAndTransformBoxes from "../RegionSelectAndTransformBoxes"
 import VideoOrImageCanvasBackground from "../VideoOrImageCanvasBackground"
 import useEventCallback from "use-event-callback"
@@ -43,7 +37,6 @@ type Props = {
   regions: Array<Region>,
   imageSrc?: string,
   imageAngle?: number,
-  keypointDefinitions?: KeypointsDefinition,
   onMouseMove?: ({ x: number, y: number }) => any,
   onMouseDown?: ({ x: number, y: number }) => any,
   onMouseUp?: ({ x: number, y: number }) => any,
@@ -53,17 +46,11 @@ type Props = {
   showTags?: boolean,
   realSize?: { width: number, height: number, unitName: string },
   showCrosshairs?: boolean,
-  showMask?: boolean,
   showHighlightBox?: boolean,
-  showPointDistances?: boolean,
-  pointDistancePrecision?: number,
   regionClsList?: Array<string>,
-  regionTagList?: Array<string>,
   allowedArea?: { x: number, y: number, w: number, h: number },
   RegionEditLabel?: Node,
   zoomOnAllowedArea?: boolean,
-  fullImageSegmentationMode?: boolean,
-  autoSegmentationOptions?: Object,
   modifyingAllowedArea?: boolean,
   labelBoxPosition?: string,
   showDocRegion?: boolean,
@@ -73,16 +60,11 @@ type Props = {
   onCloseRegionEdit: (Region) => any,
   onDeleteRegion: (Region) => any,
   onBeginBoxTransform: (Box, [number, number]) => any,
-  onBeginMovePolygonPoint: (Polygon, index: number) => any,
-  onBeginMoveKeypoint: (Keypoints, index: number) => any,
-  onAddPolygonPoint: (Polygon, point: [number, number], index: number) => any,
   onSelectRegion: (Region) => any,
-  onBeginMovePoint: (Point) => any,
   onImageMetaLoaded: ({
     naturalWidth: number,
     naturalHeight: number,
   }) => any,
-  onRegionClassAdded: () => {},
 }
 
 const getDefaultMat = (allowedArea = null, { iw, ih } = {}) => {
@@ -107,17 +89,11 @@ export const ImageCanvas = ({
   dragWithPrimary = false,
   zoomWithPrimary = false,
   createWithPrimary = false,
-  pointDistancePrecision = 0,
   regionClsList,
-  regionTagList,
   showCrosshairs,
   showHighlightBox = true,
-  showPointDistances,
   allowedArea,
   RegionEditLabel = null,
-  showMask = true,
-  fullImageSegmentationMode,
-  autoSegmentationOptions,
   labelBoxPosition = 'left',
   showDocRegion = false,
   transformGrabberColor = 'white',
@@ -126,16 +102,10 @@ export const ImageCanvas = ({
   onBeginRegionEdit,
   onCloseRegionEdit,
   onBeginBoxTransform,
-  onBeginMovePolygonPoint,
-  onAddPolygonPoint,
-  onBeginMoveKeypoint,
   onSelectRegion,
-  onBeginMovePoint,
   onDeleteRegion,
-  onRegionClassAdded,
   zoomOnAllowedArea = true,
   modifyingAllowedArea = false,
-  keypointDefinitions,
 }: Props) => {
   const classes = useStyles()
 
@@ -361,14 +331,9 @@ export const ImageCanvas = ({
           dragWithPrimary={dragWithPrimary}
           createWithPrimary={createWithPrimary}
           zoomWithPrimary={zoomWithPrimary}
-          onBeginMovePoint={onBeginMovePoint}
           onSelectRegion={onSelectRegion}
-          layoutParams={layoutParams}
           mat={mat}
           onBeginBoxTransform={onBeginBoxTransform}
-          onBeginMovePolygonPoint={onBeginMovePolygonPoint}
-          onBeginMoveKeypoint={onBeginMoveKeypoint}
-          onAddPolygonPoint={onAddPolygonPoint}
           showHighlightBox={showHighlightBox}
           showDocRegion={showDocRegion}
           transformGrabberColor={transformGrabberColor}
@@ -381,7 +346,6 @@ export const ImageCanvas = ({
             projectRegionBox={projectRegionBox}
             mouseEvents={mouseEvents}
             regionClsList={regionClsList}
-            regionTagList={regionTagList}
             onBeginRegionEdit={onBeginRegionEdit}
             onChangeRegion={onChangeRegion}
             onCloseRegionEdit={onCloseRegionEdit}
@@ -389,7 +353,6 @@ export const ImageCanvas = ({
             layoutParams={layoutParams}
             imageSrc={imageSrc}
             RegionEditLabel={RegionEditLabel}
-            onRegionClassAdded={onRegionClassAdded}
             showDocRegion={showDocRegion}
           />
         </PreventScrollToParents>
@@ -399,7 +362,6 @@ export const ImageCanvas = ({
           <RegionLabel
             disableClose
             allowedClasses={regionClsList}
-            allowedTags={regionTagList}
             onChange={onChangeRegion}
             onDelete={onDeleteRegion}
             editing
@@ -424,30 +386,11 @@ export const ImageCanvas = ({
           }}
         />
       )}
-      {showPointDistances && (
-        <PointDistances
-          key="pointDistances"
-          regions={regions}
-          realSize={realSize}
-          projectRegionBox={projectRegionBox}
-          pointDistancePrecision={pointDistancePrecision}
-        />
-      )}
       <PreventScrollToParents
         style={{ width: "100%", height: "100%" }}
         {...mouseEvents}
       >
         <React.Fragment>
-          {fullImageSegmentationMode && (
-            <ImageMask
-              hide={!showMask}
-              autoSegmentationOptions={autoSegmentationOptions}
-              imagePosition={imagePosition}
-              regionClsList={regionClsList}
-              imageSrc={imageSrc}
-              regions={regions}
-            />
-          )}
           <canvas
             style={{ opacity: 0.25 }}
             className={classes.canvas}
@@ -455,10 +398,8 @@ export const ImageCanvas = ({
           />
           <RegionShapes
             mat={mat}
-            keypointDefinitions={keypointDefinitions}
             imagePosition={imagePosition}
             regions={regions}
-            fullSegmentationMode={fullImageSegmentationMode}
             showDocRegion={showDocRegion}
           />
           <VideoOrImageCanvasBackground
@@ -466,7 +407,6 @@ export const ImageCanvas = ({
             mouseEvents={mouseEvents}
             onLoad={handleImageLoaded}
             imageSrc={imageSrc}
-            useCrossOrigin={fullImageSegmentationMode}
           />
         </React.Fragment>
       </PreventScrollToParents>

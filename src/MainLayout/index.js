@@ -16,7 +16,6 @@ import { withHotKeys } from "react-hotkeys"
 import iconDictionary from "./icon-dictionary"
 import Workspace from "react-material-workspace-layout/Workspace"
 import DebugBox from "../DebugSidebarBox"
-import TagsSidebarBox from "../TagsSidebarBox"
 import TaskDescription from "../TaskDescriptionSidebarBox"
 import RegionSelector from "../RegionSelectorSidebarBox"
 import ImageSelector from "../ImageSelectorSidebarBox"
@@ -58,7 +57,6 @@ type Props = {
   showPreprocessButton?: boolean,
   showDeleteImageButton?: boolean,
   showMoveButton?: boolean,
-  onRegionClassAdded: () => {},
 }
 
 export const MainLayout = ({
@@ -71,7 +69,6 @@ export const MainLayout = ({
   showDeleteImageButton = false,
   showMoveButton = false,
   RegionEditLabel,
-  onRegionClassAdded,
 }: Props) => {
   const classes = useStyles()
   const settings = useSettings()
@@ -80,9 +77,9 @@ export const MainLayout = ({
   const memoizedActionFns = useRef({})
   const action = (type: string, ...params: Array<string>) => {
     const fnKey = `${type}(${params.join(",")})`
-    if (memoizedActionFns.current[fnKey])
+    if (memoizedActionFns.current[fnKey]) {
       return memoizedActionFns.current[fnKey]
-
+    }
     const fn = (...args: any) =>
       params.length > 0
         ? dispatch(
@@ -128,24 +125,17 @@ export const MainLayout = ({
         !["select", "pan", "zoom"].includes(state.selectedTool)
       }
       key={state.selectedImage}
-      showMask={state.showMask}
-      fullImageSegmentationMode={state.fullImageSegmentationMode}
-      autoSegmentationOptions={state.autoSegmentationOptions}
       showTags={state.showTags}
       allowedArea={state.allowedArea}
       modifyingAllowedArea={state.selectedTool === "modify-allowed-area"}
       regionClsList={state.regionClsList}
-      regionTagList={state.regionTagList}
       regions={activeImage && activeImage.regions ? activeImage.regions : []}
       realSize={activeImage ? activeImage.realSize : undefined}
       imageSrc={activeImage ? activeImage.src : null}
       imageAngle={activeImage ? (activeImage.angle || 0) : 0}
-      pointDistancePrecision={state.pointDistancePrecision}
       createWithPrimary={state.selectedTool.includes("create")}
       dragWithPrimary={state.selectedTool === "pan"}
       zoomWithPrimary={state.selectedTool === "zoom"}
-      showPointDistances={state.showPointDistances}
-      keypointDefinitions={state.keypointDefinitions}
       onMouseMove={action("MOUSE_MOVE")}
       onMouseDown={action("MOUSE_DOWN")}
       onMouseUp={action("MOUSE_UP")}
@@ -154,28 +144,10 @@ export const MainLayout = ({
       onCloseRegionEdit={action("CLOSE_REGION_EDITOR", "region")}
       onDeleteRegion={action("DELETE_REGION", "region")}
       onBeginBoxTransform={action("BEGIN_BOX_TRANSFORM", "box", "directions")}
-      onBeginMovePolygonPoint={action(
-        "BEGIN_MOVE_POLYGON_POINT",
-        "polygon",
-        "pointIndex"
-      )}
-      onBeginMoveKeypoint={action(
-        "BEGIN_MOVE_KEYPOINT",
-        "region",
-        "keypointId"
-      )}
-      onAddPolygonPoint={action(
-        "ADD_POLYGON_POINT",
-        "polygon",
-        "point",
-        "pointIndex"
-      )}
       onSelectRegion={action("SELECT_REGION", "region")}
-      onBeginMovePoint={action("BEGIN_MOVE_POINT", "point")}
       onImageLoaded={action("IMAGE_LOADED", "image")}
       RegionEditLabel={RegionEditLabel}
       onImageMetaLoaded={action("IMAGE_META_LOADED", "metadata")}
-      onRegionClassAdded={onRegionClassAdded}
     />
   )
 
@@ -246,7 +218,6 @@ export const MainLayout = ({
             selectedTools={[
               state.selectedTool,
               state.showTags && "show-tags",
-              state.showMask && "show-mask",
             ].filter(Boolean)}
             iconSidebarItems={[
               {
@@ -274,35 +245,9 @@ export const MainLayout = ({
                 disabled: !activeImage || activeImageLocked
               },
               {
-                name: "create-point",
-                helperText: !activeImage || activeImageLocked ? "" : "Add Point",
-                disabled: !activeImage || activeImageLocked
-              },
-              {
                 name: "create-box",
                 helperText: !activeImage || activeImageLocked ? "" : "Add Bounding Box",
                 disabled: !activeImage || activeImageLocked
-              },
-              {
-                name: "create-polygon",
-                helperText: !activeImage || activeImageLocked ? "" : "Add Polygon",
-                disabled: !activeImage || activeImageLocked
-              },
-              {
-                name: "create-expanding-line",
-                helperText: !activeImage || activeImageLocked ? "" : "Add Expanding Line",
-                disabled: !activeImage || activeImageLocked
-              },
-              {
-                name: "create-keypoints",
-                helperText: !activeImage || activeImageLocked ? "" : "Add Keypoints (Pose)",
-                disabled: !activeImage || activeImageLocked
-              },
-              state.fullImageSegmentationMode && {
-                name: "show-mask",
-                alwaysShowing: true,
-                helperText: activeImageLocked ? "" : "Show / Hide Mask",
-                disabled: activeImageLocked
               },
               {
                 name: "modify-allowed-area",
@@ -334,15 +279,6 @@ export const MainLayout = ({
               state.taskDescription && (
                 <TaskDescription description={state.taskDescription} />
               ),
-              state.labelImages && (
-                <TagsSidebarBox
-                  currentImage={activeImage}
-                  imageClsList={state.imageClsList}
-                  imageTagList={state.imageTagList}
-                  onChangeImage={action("CHANGE_IMAGE", "delta")}
-                  expandedByDefault
-                />
-              ),
               <ImageSelector
                  showThumbnails={settings.showThumbnails}
                  onSelect={action("SELECT_IMAGE", "image", "imageIndex")}
@@ -359,14 +295,9 @@ export const MainLayout = ({
                 showDocRegion={settings.showDocRegion}
               />,
               <HistorySidebarBox
-                history={state.history}
+                history={activeImage ? state.history[activeImage.id] || [] : []}
                 onRestoreHistory={action("RESTORE_HISTORY")}
               />,
-              /*<UploaderSidebarBox
-                uploadUrl={state.uploadUrl}
-                authToken={state.authToken}
-                onAddImage={action("ADD_IMAGE", "image")}
-              />*/
             ].filter(Boolean)}
           >
             {canvas}

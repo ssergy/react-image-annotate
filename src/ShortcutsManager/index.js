@@ -13,10 +13,6 @@ export const defaultHotkeys = [
     binding: "KeyZ",
   },
   {
-    id: "create_point",
-    description: "Create a point",
-  },
-  {
     id: "create_bounding_box",
     description: "Create a bounding box",
     binding: "KeyW",
@@ -24,14 +20,6 @@ export const defaultHotkeys = [
   {
     id: "pan_tool",
     description: "Select the Pan Tool",
-  },
-  {
-    id: "create_polygon",
-    description: "Create a Polygon",
-  },
-  {
-    id: "create_pixel",
-    description: "Create a Pixel Mask",
   },
   {
     id: "save_and_previous_sample",
@@ -78,13 +66,6 @@ export const useDispatchHotkeyHandlers = ({ dispatch }) => {
           shortcut: true
         })
       },
-      create_point: () => {
-        dispatch({
-          type: "SELECT_TOOL",
-          selectedTool: "create-point",
-          shortcut: true
-        })
-      },
       create_bounding_box: () => {
         dispatch({
           type: "SELECT_TOOL",
@@ -96,20 +77,6 @@ export const useDispatchHotkeyHandlers = ({ dispatch }) => {
         dispatch({
           type: "SELECT_TOOL",
           selectedTool: "pan",
-          shortcut: true
-        })
-      },
-      create_polygon: () => {
-        dispatch({
-          type: "SELECT_TOOL",
-          selectedTool: "create-polygon",
-          shortcut: true
-        })
-      },
-      create_pixel: () => {
-        dispatch({
-          type: "SELECT_TOOL",
-          selectedTool: "create-pixel",
           shortcut: true
         })
       },

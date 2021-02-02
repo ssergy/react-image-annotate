@@ -55,7 +55,7 @@ export default () => {
       setImages(images => images.map((i, k) => {
         if (k === 0) {
           return {...i, regions: i.regions.concat([{
-              cls: 'auto_label',
+              cls: 'doc_region',
               h: 0.02614379084967322,
               type: "box",
               w: 0.02758554402153013,
@@ -64,15 +64,14 @@ export default () => {
         }
         return i
       }))
-    }, 10000)
+    }, 15000)
   }, [])
 
   return (
       <ErrorBoundary>
         <div><h2>Example</h2></div>
         <Annotator hotKeys={true}
-                     regionTagList={[]}
-                     regionClsList={["tab", "button", "auto_label"]}
+                     regionClsList={["tab", "button", "auto_label", "doc_region"]}
                      rightSidebarDefaultExpanded={true}
                      images={images}
                      onUploadClick={() => {
@@ -83,6 +82,21 @@ export default () => {
                      }}
                      onSaveItem={(image) => {
                        console.log('save active image', image)
+                       setImages(images => images.map((i) => {
+                           if (i.id === image.id) {
+                             i.regions = (image.regions || []).map((r) => {
+                               return {
+                                 type: 'box',
+                                 cls: r.cls || '',
+                                 x: r.x,
+                                 y: r.y,
+                                 w: r.w,
+                                 h: r.h
+                               }
+                             })
+                           }
+                           return i
+                       }))
                      }}
                      onDeleteItem={(image) => {
                        setImages(images => images.filter(i => i.id !== image.id))

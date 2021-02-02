@@ -41,7 +41,6 @@ export const HighlightBox = ({
   dragWithPrimary,
   zoomWithPrimary,
   createWithPrimary,
-  onBeginMovePoint,
   onSelectRegion,
   region: r,
   pbox,
@@ -50,7 +49,6 @@ export const HighlightBox = ({
   dragWithPrimary: boolean,
   zoomWithPrimary: boolean,
   createWithPrimary: boolean,
-  onBeginMovePoint: Function,
   onSelectRegion: Function,
   region: any,
   pbox: { x: number, y: number, w: number, h: number },
@@ -60,27 +58,15 @@ export const HighlightBox = ({
   if (!pbox.h || pbox.h === Infinity) return null
   if (r.unfinished) return null
 
-  const styleCoords =
-    r.type === "point"
-      ? {
-          left: pbox.x + pbox.w / 2 - 30,
-          top: pbox.y + pbox.h / 2 - 30,
-          width: 60,
-          height: 60,
-        }
-      : {
-          left: pbox.x,
-          top: pbox.y,
-          width: pbox.w,
-          height: pbox.h,
-        }
+  const styleCoords = {
+    left: pbox.x,
+    top: pbox.y,
+    width: pbox.w,
+    height: pbox.h,
+  }
 
   const pathD =
-    r.type === "point"
-      ? `M5,5 L${styleCoords.width - 5} 5L${styleCoords.width - 5} ${
-          styleCoords.height - 5
-        }L5 ${styleCoords.height - 5}Z`
-      : `M0,0 L${pbox.w},0 L${pbox.w},${pbox.h} L0,${pbox.h} Z`
+    `M0,0 L${pbox.w},0 L${pbox.w},${pbox.h} L0,${pbox.h} Z`
 
   return (
     <svg
@@ -92,15 +78,9 @@ export const HighlightBox = ({
       {...(!zoomWithPrimary && !dragWithPrimary
         ? {
             onMouseDown: (e) => {
-              if (
-                !r.locked &&
-                r.type === "point" &&
-                r.highlighted &&
-                e.button === 0
-              ) {
-                return onBeginMovePoint(r)
+              if (e.button === 0 && !createWithPrimary) {
+                return onSelectRegion(r)
               }
-              if (e.button === 0 && !createWithPrimary) return onSelectRegion(r)
               mouseEvents.onMouseDown(e)
             },
           }
@@ -108,7 +88,7 @@ export const HighlightBox = ({
       style={{
         ...(r.highlighted
           ? {
-              pointerEvents: r.type !== "point" ? "none" : undefined,
+              pointerEvents: "none",
               cursor: "grab",
             }
           : {

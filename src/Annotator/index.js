@@ -8,14 +8,8 @@ import type {
   MainLayoutState,
   Action,
 } from "../MainLayout/types"
-import type { KeypointsDefinition } from "../ImageCanvas/region-tools"
 import SettingsProvider from "../SettingsProvider"
-
-import combineReducers from "./reducers/combine-reducers.js"
 import generalReducer from "./reducers/general-reducer.js"
-import imageReducer from "./reducers/image-reducer.js"
-import historyHandler from "./reducers/history-handler.js"
-
 import useEventCallback from "use-event-callback"
 import makeImmutable, { without } from "seamless-immutable"
 import {HotKeys, configure} from "react-hotkeys";
@@ -69,27 +63,17 @@ const HotkeysWrapper = ({hotKeys, children}) => {
 type Props = {
   taskDescription?: string,
   allowedArea?: { x: number, y: number, w: number, h: number },
-  regionTagList?: Array<string>,
   regionClsList?: Array<string>,
-  imageTagList?: Array<string>,
-  imageClsList?: Array<string>,
   enabledTools?: Array<string>,
   selectedTool?: String,
   showTags?: boolean,
   selectedImage?: string | number,
   images?: Array<Image>,
-  showPointDistances?: boolean,
-  pointDistancePrecision?: number,
   RegionEditLabel?: Node,
   onExit: (MainLayoutState) => any,
   onSaveItem: (Image) => Promise,
   onDeleteItem: (Image) => Promise,
   onSelectedItem: (number) => any,
-  keypointDefinitions: KeypointsDefinition,
-  fullImageSegmentationMode?: boolean,
-  autoSegmentationOptions?:
-    | {| type: "simple" |}
-    | {| type: "autoseg", maxClusters?: number, slicWeightFactor?: number |},
   hotKeys?: boolean,
   rightSidebarDefaultExpanded?: boolean
 }
@@ -98,25 +82,15 @@ export const Annotator = ({
   images,
   allowedArea,
   selectedImage = images && images.length > 0 ? 0 : -1,
-  showPointDistances,
-  pointDistancePrecision,
   showTags = false,
   enabledTools = [
     "select",
-    "create-point",
     "create-box",
-    "create-polygon",
-    "create-expanding-line",
-    "show-mask",
     "rotate"
   ],
   selectedTool = "select",
-  regionTagList = [],
   regionClsList = [],
-  imageTagList = [],
-  imageClsList = [],
   taskDescription = "",
-  fullImageSegmentationMode = false,
   RegionEditLabel,
   onExit,
   onSaveItem,
@@ -127,8 +101,6 @@ export const Annotator = ({
   onUploadClick,
   onPreprocessClick,
   onMoveClick,
-  keypointDefinitions,
-  autoSegmentationOptions = { type: "autoseg" },
   hotKeys = false,
   rightSidebarDefaultExpanded
 }: Props) => {
@@ -138,31 +110,16 @@ export const Annotator = ({
   }
 
   const [state, dispatchToReducer] = useReducer(
-    historyHandler(
-      combineReducers(
-        imageReducer,
-        generalReducer
-      )
-    ),
+    generalReducer,
     makeImmutable({
       showTags,
       allowedArea,
-      showPointDistances,
-      pointDistancePrecision,
       selectedTool,
-      fullImageSegmentationMode: fullImageSegmentationMode,
-      autoSegmentationOptions,
       mode: null,
       taskDescription,
-      showMask: true,
-      labelImages: imageClsList.length > 0 || imageTagList.length > 0,
       regionClsList,
-      regionTagList,
-      imageClsList,
-      imageTagList,
       enabledTools,
-      history: [],
-      keypointDefinitions,
+      history: {},
       selectedImage: -1,
       activeImage: null,//selectedImage === undefined ? null : images[selectedImage],
       images: [],
@@ -196,13 +153,6 @@ export const Annotator = ({
       })
     }
     dispatchToReducer(action)
-  })
-
-  const onRegionClassAdded = useEventCallback((cls) => {
-    dispatchToReducer({
-      type: "ON_CLS_ADDED",
-      cls: cls,
-    })
   })
 
   useEffect(() => {
@@ -249,7 +199,6 @@ export const Annotator = ({
           showDeleteImageButton={Boolean(onDeleteItem)}
           state={state}
           dispatch={dispatch}
-          onRegionClassAdded={onRegionClassAdded}
         />
       </SettingsProvider>
     </HotkeysWrapper>

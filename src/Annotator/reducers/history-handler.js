@@ -1,60 +1,31 @@
 // @flow
 
-import type { MainLayoutState, Action } from "../../MainLayout/types"
-import { setIn, updateIn, without } from "seamless-immutable"
+import type { MainLayoutState, Image } from "../../MainLayout/types"
+import {updateIn} from "seamless-immutable"
 import moment from "moment"
 
-const typesToSaveWithHistory = {
-  BEGIN_BOX_TRANSFORM: "Transform/Move Box",
-  BEGIN_MOVE_POINT: "Move Point",
-  DELETE_REGION: "Delete Region",
-}
-
-export const saveToHistory = (state: MainLayoutState, name: string) =>
-  updateIn(state, ["history"], (h) =>
+export const saveToHistory = (state: MainLayoutState, image: Image, name: string) =>
+  updateIn(state, ["history", image.id], (h) =>
     [
       {
         time: moment().toDate(),
-        state: without(state, "history"),
+        image: {angle: image.angle || 0, regions: (image.regions || []).map((i) => {
+          return {
+            id: i.id,
+            cls: i.cls || '',
+            locked: i.locked || undefined,
+            visible: i.visible || undefined,
+            color: i.color,
+            editingLabels: i.editingLabels || undefined,
+            highlighted: i.highlighted || undefined,
+            type: i.type,
+            x: i.x,
+            y: i.y,
+            w: i.w,
+            h: i.h,
+          }
+        }), status: image.status || null},
         name,
       },
     ].concat((h || []).slice(0, 9))
   )
-
-export default (reducer) => {
-  return (state: MainLayoutState, action: Action) => {
-    const prevState = state
-    const nextState = reducer(state, action)
-
-    if (action.type === "RESTORE_HISTORY") {
-      if (state.history.length > 0) {
-        return setIn(
-          nextState.history[0].state,
-          ["history"],
-          nextState.history.slice(1)
-        )
-      }
-    } else {
-      if (
-        prevState !== nextState &&
-        Object.keys(typesToSaveWithHistory).includes(action.type)
-      ) {
-        return setIn(
-          nextState,
-          ["history"],
-          [
-            {
-              time: moment().toDate(),
-              state: without(prevState, "history"),
-              name: typesToSaveWithHistory[action.type] || action.type,
-            },
-          ]
-            .concat(nextState.history || [])
-            .slice(0, 9)
-        )
-      }
-    }
-
-    return nextState
-  }
-}

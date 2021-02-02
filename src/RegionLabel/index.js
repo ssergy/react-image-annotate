@@ -10,10 +10,7 @@ import IconButton from "@material-ui/core/IconButton"
 import Button from "@material-ui/core/Button"
 import TrashIcon from "@material-ui/icons/Delete"
 import CheckIcon from "@material-ui/icons/Check"
-//import UndoIcon from "@material-ui/icons/Undo"
 import Select from "react-select"
-import CreatableSelect from "react-select/creatable"
-
 import { asMutable } from "seamless-immutable"
 
 const useStyles = makeStyles(styles)
@@ -22,26 +19,21 @@ type Props = {
   region: Region,
   editing?: boolean,
   allowedClasses?: Array<string>,
-  allowedTags?: Array<string>,
   cls?: string,
-  tags?: Array<string>,
   onDelete: (Region) => null,
   onChange: (Region) => null,
   onClose: (Region) => null,
   onOpen: (Region) => null,
-  onRegionClassAdded: () => {},
 }
 
 export const RegionLabel = ({
   region,
   editing,
   allowedClasses,
-  allowedTags,
   onDelete,
   onChange,
   onClose,
   onOpen,
-  onRegionClassAdded,
 }: Props) => {
   const classes = useStyles()
 
@@ -61,15 +53,6 @@ export const RegionLabel = ({
                 style={{ backgroundColor: region.color }}
               />
               {region.cls}
-            </div>
-          )}
-          {region.tags && (
-            <div className="tags">
-              {region.tags.map((t) => (
-                <div key={t} className="tag">
-                  {t}
-                </div>
-              ))}
             </div>
           )}
         </div>
@@ -104,17 +87,14 @@ export const RegionLabel = ({
           </div>
           {(allowedClasses || []).length > 0 && (
             <div style={{ marginTop: 6 }}>
-              <CreatableSelect
+              <Select
                 placeholder="Classification"
                 blurInputOnSelect={true}
                 closeMenuOnSelect={true}
                 isSearchable={false}
-                onChange={(o, actionMeta) => {
-                  if (actionMeta.action === "create-option") {
-                    onRegionClassAdded(o.value)
-                  }
-                  return onChange({
-                    ...(region: any),
+                onChange={(o) => {
+                  onChange({
+                    id: region.id,
                     cls: o.value,
                   })
                 }}
@@ -123,24 +103,6 @@ export const RegionLabel = ({
                 }
                 options={asMutable(
                   allowedClasses.map((c) => ({ value: c, label: c }))
-                )}
-              />
-            </div>
-          )}
-          {(allowedTags || []).length > 0 && (
-            <div style={{ marginTop: 4 }}>
-              <Select
-                onChange={(newTags) =>
-                  onChange({
-                    ...(region: any),
-                    tags: newTags.map((t) => t.value),
-                  })
-                }
-                placeholder="Tags"
-                value={(region.tags || []).map((c) => ({ label: c, value: c }))}
-                isMulti
-                options={asMutable(
-                  allowedTags.map((c) => ({ value: c, label: c }))
                 )}
               />
             </div>

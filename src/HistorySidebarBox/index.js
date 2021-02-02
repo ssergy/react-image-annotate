@@ -1,10 +1,9 @@
 // @flow
 
-import React, { memo } from "react"
+import React, {memo, useMemo} from "react"
 import { makeStyles } from "@material-ui/core/styles"
 import SidebarBoxContainer from "../SidebarBoxContainer"
 import HistoryIcon from "@material-ui/icons/History"
-import List from "@material-ui/core/List"
 import ListItem from "@material-ui/core/ListItem"
 import ListItemText from "@material-ui/core/ListItemText"
 import IconButton from "@material-ui/core/IconButton"
@@ -13,6 +12,8 @@ import UndoIcon from "@material-ui/icons/Undo"
 import moment from "moment"
 import { grey } from "@material-ui/core/colors"
 import isEqual from "lodash/isEqual"
+import { FixedSizeList } from "react-window"
+import AutoSizer from "react-virtualized-auto-sizer"
 
 const useStyles = makeStyles({
   emptyText: {
@@ -21,6 +22,17 @@ const useStyles = makeStyles({
     color: grey[500],
     textAlign: "center",
     padding: 20,
+  },
+  root: {
+    width: '100%',
+    height: '100%',
+    fontSize: 14,
+    "& .MuiTypography-body2": {
+      fontSize: "0.875em",
+    },
+    "& .MuiSvgIcon-fontSizeSmall": {
+      fontSize: 17.5,
+    }
   },
 })
 
@@ -34,36 +46,63 @@ export const HistorySidebarBox = ({
 }) => {
   const classes = useStyles()
 
+  const listData = useMemo(() => {
+    return {
+      history, onRestoreHistory
+    }
+  }, [history, onRestoreHistory])
+
   return (
     <SidebarBoxContainer
       title="History"
       icon={<HistoryIcon style={{ color: grey[700] }} />}
+      noScroll={true}
       expandedByDefault
     >
-      <List>
+      <div className={classes.root}>
         {history.length === 0 && (
           <div className={classes.emptyText}>No History Yet</div>
         )}
-        {history.map(({ name, time }, i) => (
-          <ListItem button dense key={i}>
-            <ListItemText
-              style={listItemTextStyle}
-              primary={name}
-              secondary={moment(time).format("LT")}
-            />
-            {i === 0 && (
-              <ListItemSecondaryAction onClick={() => onRestoreHistory()}>
-                <IconButton>
-                  <UndoIcon />
-                </IconButton>
-              </ListItemSecondaryAction>
+        {history.length > 0 && (
+          <AutoSizer>
+            {({ height }) => (
+              <FixedSizeList height={height}
+                             width={284}
+                             itemCount={history.length}
+                             itemSize={55}
+                             itemData={listData}>
+                {Row}
+              </FixedSizeList>
             )}
-          </ListItem>
-        ))}
-      </List>
+          </AutoSizer>
+        )}
+      </div>
     </SidebarBoxContainer>
   )
 }
+
+const Row = memo(({ data, index, style }) => {
+  const {history, onRestoreHistory} = data;
+  return <ListItem key={index} component={'div'} style={index === 0 ? {} : style} ContainerComponent={'div'} ContainerProps={index === 0 ? {style: style} : {}} button dense>
+    <ListItemText
+      style={listItemTextStyle}
+      primary={history[index].name}
+      secondary={moment(history[index].time).format("LT")}
+    />
+    {index === 0 && (
+      <ListItemSecondaryAction onClick={() => onRestoreHistory()}>
+        <IconButton>
+          <UndoIcon />
+        </IconButton>
+      </ListItemSecondaryAction>
+    )}
+  </ListItem>
+}, (prevProps, nextProps) =>
+  isEqual(
+    prevProps.data.history.length === nextProps.data.history.length &&
+    prevProps.index === nextProps.index
+  )
+);
 
 export default memo(HistorySidebarBox, (prevProps, nextProps) =>
   isEqual(

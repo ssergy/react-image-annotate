@@ -90,7 +90,7 @@ export const ImageSelectorSidebarBox = ({ showThumbnails, images, selectedImageI
 const Row = memo(({ data, index, style }) => {
   const {images, showThumbnails, showDeleteImageButton, selectedImageIndex, onSelect, onDelete} = data;
   const img = images[index];
-  return <ListItem key={index} ContainerComponent={'div'} ContainerProps={{style: style}} button dense onClick={() => onSelect(img, index)} selected={selectedImageIndex === index}>
+  return <ListItem key={index} component={'div'} style={showDeleteImageButton ? {} : style} ContainerComponent={'div'} ContainerProps={showDeleteImageButton ? {style: style} : {}} button dense onClick={() => onSelect(img, index)} selected={selectedImageIndex === index}>
       {showThumbnails && <ListItemAvatar>
         <Avatar alt="" src={img.thumbnailSrc ? img.thumbnailSrc : img.src}/>
       </ListItemAvatar>}

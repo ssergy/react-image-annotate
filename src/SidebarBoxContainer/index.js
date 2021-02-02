@@ -24,7 +24,7 @@ const useStyles = makeStyles({
       overflow: 'hidden',
       minHeight: '25%',
       "&.noScroll": {
-        minHeight: '35%',
+        minHeight: '30%',
       }
     },
   },

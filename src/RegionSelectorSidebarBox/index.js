@@ -41,7 +41,6 @@ const RowLayout = ({
   order,
   classification,
   area,
-  tags,
   trash,
   lock,
   visible,
@@ -115,7 +114,7 @@ const Row = ({
     <RowLayout
       header={false}
       highlighted={highlighted}
-      onClick={() => onSelectRegion(r)}
+      onClick={() => onSelectRegion(r.id)}
       order={`#${index + 1}`}
       classification={<Chip text={cls || ""} color={color || "#ddd"} />}
       area=""
@@ -123,12 +122,12 @@ const Row = ({
       lock={
         r.locked ? (
           <LockIcon
-            onClick={() => onChangeRegion({ ...r, locked: false })}
+            onClick={() => onChangeRegion({ id: r.id, locked: false })}
             className="icon2"
           />
         ) : (
           <UnlockIcon
-            onClick={() => onChangeRegion({ ...r, locked: true })}
+            onClick={() => onChangeRegion({ id: r.id, locked: true })}
             className="icon2"
           />
         )
@@ -136,12 +135,12 @@ const Row = ({
       visible={
         r.visible || (r.visible === undefined && (r.cls !== 'doc_region' || showDocRegion)) ? (
           <VisibleIcon
-            onClick={() => onChangeRegion({ ...r, visible: false })}
+            onClick={() => onChangeRegion({ id: r.id, visible: false })}
             className="icon2"
           />
         ) : (
           <VisibleOffIcon
-            onClick={() => onChangeRegion({ ...r, visible: true })}
+            onClick={() => onChangeRegion({ id: r.id, visible: true })}
             className="icon2"
           />
         )

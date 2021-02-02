@@ -11,7 +11,7 @@ The best image/video annotation tool ever. [Check out the demo here](https://uni
 ## Features
 
 - Simple input/output format
-- Bounding Box, Point and Polygon Annotation
+- Bounding Box
 - Zooming, Scaling, Panning
 - Multiple Images
 - Cursor Crosshair
@@ -30,9 +30,9 @@ const App = () => (
   <ReactImageAnnotate
     labelImages
     regionClsList={["Alpha", "Beta", "Charlie", "Delta"]}
-    regionTagList={["tag1", "tag2", "tag3"]}
     images={[
       {
+        id: "11111",
         src: "https://placekitten.com/408/287",
         name: "Image 1",
         regions: []
@@ -60,16 +60,11 @@ All of the following properties can be defined on the Annotator...
 | ------------------------ | ------------------------------------------------ | --------------------------------------------------------------------------------------- | ------------- |
 | `taskDescription`        | \*`string`                                       | Markdown description for what to do in the image.                                       |               |
 | `allowedArea`            | `{ x: number, y: number, w: number, h: number }` | Area that is available for annotation.                                                  | Entire image. |
-| `regionTagList`          | `Array<string>`                                  | Allowed "tags" (mutually inclusive classifications) for regions.                        |               |
 | `regionClsList`          | `Array<string>`                                  | Allowed "classes" (mutually exclusive classifications) for regions.                     |               |
-| `imageTagList`           | `Array<string>`                                  | Allowed tags for entire image.                                                          |               |
-| `imageClsList`           | `Array<string>`                                  | Allowed classes for entire image.                                                       |               |
-| `enabledTools`           | `Array<string>`                                  | Tools allowed to be used. e.g. "select", "create-point", "create-box", "create-polygon" | Everything.   |
+| `enabledTools`           | `Array<string>`                                  | Tools allowed to be used. e.g. "select", "pan", "zoom", "show-tags", "create-box", "show-tags" | Everything.   |
 | `showTags`               | `boolean`                                        | Show tags and allow tags on regions.                                                    | `true`        |
-| `selectedImage`          | `string`                                         | URL of initially selected image.                                                        |               |
+| `selectedImage`          | `string`                                         | URL/id of initially selected image.                                                        |               |
 | `images`                 | `Array<Image>`                                   | Array of images to load into annotator                                                  |               |
-| `showPointDistances`     | `boolean`                                        | Show distances between points.                                                          | `false`       |
-| `pointDistancePrecision` | `number`                                         | Precision on displayed points (e.g. 3 => 0.123)                                         |               |
 | `onExit`                 | `MainLayoutState => any`                         | Called when "Save" is called.                                                           |               |
 | `RegionEditLabel`        | `Node`                                           | React Node overriding the form to update the region (see [`RegionLabel`](https://github.com/waoai/react-image-annotate/blob/master/src/RegionLabel/index.js))                                                          |               |
 
@@ -77,14 +72,9 @@ All of the following properties can be defined on the Annotator...
 
 ### Development
 
-This project uses [react-storybook](https://storybook.js.org/). To begin developing run the following commands in the cloned repo.
+To begin developing run the following commands in the cloned repo.
 
 1. `yarn install`
-2. `yarn storybook`
-
-A browser tab will automatically open with the project components.
-
-See more details in the [contributing guidelines](https://github.com/waoai/react-image-annotate/wiki/Setup-for-Development).
 
 ### Icons
 
