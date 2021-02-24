@@ -18,6 +18,11 @@ export const defaultHotkeys = [
     binding: "KeyW",
   },
   {
+    id: "clear_empty_regions",
+    description: "Remove unclassified regions",
+    binding: "KeyE",
+  },
+  {
     id: "pan_tool",
     description: "Select the Pan Tool",
   },
@@ -70,6 +75,13 @@ export const useDispatchHotkeyHandlers = ({ dispatch }) => {
         dispatch({
           type: "SELECT_TOOL",
           selectedTool: "create-box",
+          shortcut: true
+        })
+      },
+      clear_empty_regions: () => {
+        dispatch({
+          type: "SELECT_TOOL",
+          selectedTool: "clear-empty-regions",
           shortcut: true
         })
       },

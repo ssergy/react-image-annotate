@@ -22,7 +22,8 @@ configure({
     83: 'KeyS',
     65: 'KeyA',
     68: 'KeyD',
-    90: 'KeyZ'
+    69: 'KeyE',
+    90: 'KeyZ',
   }
 })
 
