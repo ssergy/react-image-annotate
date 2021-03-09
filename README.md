@@ -6,3 +6,5 @@ forked and upgraded for text labeling only.
 - Big images datasets support
 
 - Additional features for [https://github.com/ssergy/ocra] added
+
+- Hotkeys chaged to "labelImg" format
